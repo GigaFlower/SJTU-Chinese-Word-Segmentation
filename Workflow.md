@@ -3,7 +3,7 @@ SJTU 'Introduction to CS' homework
 上海交通大学计导大一大作业  
 中文分词系统  
 
-##Github工作流程
+#基于GitHub Desktop的Github工作流程
 1. 搜索SJTU-Chinese-Word-Segmentation（如果你没有这样就看到了本文档，那么你很厉害)（其实搜索SJTU Chinese就可以了，不用打这么多字）
 2. 这做接下来的事情之前，确认我已经把你们拉入项目协作者当中并给予你们权限了！
 3. 把Github仓库clone到本地
