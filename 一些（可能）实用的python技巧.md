@@ -29,4 +29,26 @@
 		return x+1
 	
 	匿名函数：
-	lambda x:x+1
+	f = lambda x:x+1
+	
+	注：def是语句而lambda是表达式
+	可以将lambda赋给变量而不能把def赋给变量
+	
+	没有返回值也可以
+	f = lambda x:print(x)
+	
+	多个参数也可以
+	f = lambda x,y,z:x+y+z
+	
+	没有参数也可以
+	f = lambda: print("I'm called!")
+
+	稍微复杂一点的例子：
+	f = lambda seq:[i**2 for i in seq]
+	f([1,2,3]) returns [1,4,9]
+	
+	
+##zip函数
+####zip函数是一个内置函数，意思是‘拉链’
+	e.g.
+	zip([1,2,3,4],[5,6,7,8]) -> [(1,5),(2,6),(3,7),(4,8)]
