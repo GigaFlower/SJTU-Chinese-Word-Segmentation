@@ -1,16 +1,16 @@
 """Code responsible for application logic"""
 
 
-class MainController:
-    """The main controller of app activity"""
-    def __init__(self):
-        pass
-
+class BaseController:
+    """Work as a protocol,need to be subclassed."""
     def get_text(self, file_name):
         pass
 
-    def get_segmentation(self):
-        pass
+    @staticmethod
+    def get_segmentation():
+        return "Not complemented yet!"
 
-    def do_segmentation(self, string):
-        print(string)
+
+class MainController(BaseController):
+    """The main controller of app activity"""
+    pass

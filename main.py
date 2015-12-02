@@ -4,4 +4,5 @@ import Controller
 import View
 
 if __name__ == '__main__':
-    View.MainView.show()
+    m = View.MainView()
+    m.show()
