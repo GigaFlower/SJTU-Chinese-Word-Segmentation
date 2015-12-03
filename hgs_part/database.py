@@ -10,11 +10,11 @@
 #-------------------------------------------------------------------------------
 
 def file_wd():
-    f=open("upgrade_wordlist.txt","r")
+    f=open("upgrade_wordlist.txt","r", encoding="gbk")
     return f
 
 def file_cha():
-    f=open("Corpus_characterlist.txt","r")
+    f=open("Corpus_characterlist.txt","r",encoding="gbk")
     return f
 
 def database(f):
