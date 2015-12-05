@@ -1,16 +1,24 @@
 """Code responsible for application logic"""
+import tkinter as tk
+from View import TestView
+import Model
 
 
-class BaseController:
-    """Work as a protocol,need to be subclassed."""
-    def get_text(self, file_name):
-        pass
-
-    @staticmethod
-    def get_segmentation():
-        return "Not complemented yet!"
-
-
-class MainController(BaseController):
+class MainController:
     """The main controller of app activity"""
-    pass
+    def __init__(self):
+        self.root = tk.Tk()
+        self.view = TestView(self.root)
+        self.view.register(self)
+        self.model = Model.Segmentation()
+
+    def run(self):
+        self.view.show()
+        self.root.mainloop()
+
+    def sentence_segment(self, raw: str) -> str:
+        return self.model.sentence_segment(raw)
+
+    def word_segment(self, sentence: str) -> str:
+        return self.model.word_segment(sentence)
+
