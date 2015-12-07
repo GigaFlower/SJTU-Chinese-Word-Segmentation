@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        婵☆垪鈧櫕鍋?
+# Name:        Administrator
 # Purpose:
 #
 # Author:      Administrator
@@ -11,11 +11,11 @@
 
 
 def origin_file():
-    f = open("original_file.txt","r",encoding="gb2312")
+    f = open("original_file_uni.txt","r",encoding="utf-16")
     return f
 
 def punctuation_standard_file():
-    f = open("punctuation_standard_file.txt","r",encoding="gb2312")
+    f = open("punctuation_standard_file_uni.txt","r",encoding="utf-16")
     return f
 
 def cut(s,punc_stan):
@@ -46,7 +46,7 @@ def main():
     string_cutted = cut(whole_string,punc_standard)
     or_f.close()
     punctuation_standard_file().close()
-    print(string_cutted)
+    return string_cutted
 
 if __name__ == '__main__':
     main()
