@@ -10,42 +10,42 @@
 #-------------------------------------------------------------------------------
 
 
-def origin_file():
-    f = open("original_file_uni.txt","r",encoding="utf-16")
+def get_origin_file():
+    f = open("original_file.txt","r",encoding = "utf-16")
     return f
 
-def punctuation_standard_file():
-    f = open("punctuation_standard_file_uni.txt","r",encoding="utf-16")
+def get_punctuation_standard_file():
+    f = open("punctuation_standard_file.txt","r",encoding = "utf-16")
     return f
 
-def cut(s,punc_stan):
+def cut(string,punc_stan):
     '''
     We will cut the whole string into several sentences according to the sentence segment punctuations.
     The punctuations are reserved, but there exists a special case that "\n" should be deleted.
     The completed sentences will be put in the list "s_complete".
     '''
-    subs = ""
-    s_complete = []
-    for cha in s:
+    substring = ""
+    string_complete = []
+    for cha in string:
         if cha == "\n":
-            s_complete.append(subs)  # The linebreak "\n" is not included.
-            subs = ""
+            string_complete.append(substring)  # The linebreak "\n" is not included.
+            substring = ""
         else:
-            subs = "".join((subs,cha))
+            substring += cha
             if cha in punc_stan:
-                s_complete.append(subs)  # If the sentence segment punctuations("\n" is excluded) are detected, the sentence should be cutted here.
-                subs = ""
+                string_complete.append(substring)  # If the sentence segment punctuations("\n" is excluded) are detected, the sentence should be cutted here.
+                substring = ""
             else:
                 pass
-    return s_complete
+    return string_complete
 
 def main():
-    or_f = origin_file()
+    or_f = get_origin_file()
     whole_string = or_f.read()
-    punc_standard = punctuation_standard_file().read()  # "punc_standard" are sentence segment punctuations.
+    punc_standard = get_punctuation_standard_file().read()  # "punc_standard" are sentence segment punctuations.
     string_cutted = cut(whole_string,punc_standard)
     or_f.close()
-    punctuation_standard_file().close()
+    get_punctuation_standard_file().close()
     return string_cutted
 
 if __name__ == '__main__':

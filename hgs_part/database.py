@@ -1,80 +1,101 @@
 #-------------------------------------------------------------------------------
-# Name:        濠电姷顣藉Σ鍛村垂椤忓牆鐒垫い鎺戝暞閻濐亪鏌?
+# Name:        妯″潡1
 # Purpose:
 #
 # Author:      Administrator
 #
-# Created:     16/11/2015
+# Created:     07/12/2015
 # Copyright:   (c) Administrator 2015
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
-def file_wd():
-    f=open("upgrade_wordlist.txt","r", encoding="gbk")
+
+def file_word():
+    f = open("wordlist.txt","r", encoding = "utf-16")
     return f
 
 def file_cha():
-    f=open("Corpus_characterlist.txt","r",encoding="gbk")
+    f = open("characterlist.txt","r",encoding = "utf-16")
     return f
 
-def database(f):
-    s=f.read()
-    l=s.split()
+def split_into_list(f):
+    '''
+    We split the lexicon into lots of lists.
+    '''
+    s = f.read()
+    l = s.split()
     return l
 
-def divide(s):
-    length=len(s)
-    c=-1
-    l=[]
-    for m in s:
-        if ord(m[0]) >= 128:
+def combine(l):
+    '''
+    We combine the elements of the same word into a list in the form of name, probability and properties.
+    '''
+    c = -1
+    wd_l = []
+    for m in l:
+        if ord(m[0]) >= 128:  # If a Chinese character is detected, it will be appended into a new element, followed by its probability and properties.
             c += 1
-            l += [[]]
-        l[c].append(m)
-    return l
+            wd_l += [[]]
+        wd_l[c].append(m)
+    return wd_l
 
 def relist(l):
-    wd=[x[0] for x in l]
-    pb=[x[1] for x in l]
-    lex=[x[2:] for x in l]
-    return (wd,pb,lex)
+    '''
+    This function will relist the words' name, probability and properties into three separate lists.
+    '''
+    wd = [x[0] for x in l]
+    pb = [x[1] for x in l]
+    pro = [x[2:] for x in l]
+    return wd,pb,pro
 
-def dictionary(wd,pb):
-    dic=dict(zip(wd,pb))
-    return dic
-
-def DivideCha(x):
+def combine_cha(l):
+    '''
+    We combine the elements of the same character into a list in the form of name and probability.
+    '''
     wd=[]
     prob=[]
-    for i in range(len(x)):
+    for i in range(len(l)):
         if i % 2 == 0:
-            wd.append(x[i])
+            wd.append(l[i])
         else:
-            prob.append(x[i])
+            prob.append(l[i])
     return wd,prob
 
-def SolveWd():
-    f_wd=file_wd()
-    x=database(f_wd)
-    l=divide(x)  # "word"=l[0]; "prob"=l[1]; "lexical"=l[2:]
-    (wd,pb,lex)=relist(l)
-    dic=dictionary(wd,pb)
-    lex_dic=dictionary(wd,lex)
-    f_wd.close()
-    return dic,lex_dic
+def dictionary(a,b):
+    '''
+    This function will make a dictionary of the words.
+    '''
+    dic=dict(zip(a,b))
+    return dic
 
-def SolveCha():
-    f_cha=file_cha()
-    x=database(f_cha)
-    wd,prob=DivideCha(x)
-    dic_cha=dictionary(wd,prob)
+def solve_word():
+    '''
+    It's the process of creating a word dictionary.
+    '''
+    f_wd = file_word()
+    l = split_into_list(f_wd)
+    wd_l = combine(l)
+    wd,pb,pro = relist(wd_l)
+    dic_pb = dictionary(wd,pb)
+    dic_pro = dictionary(wd,pro)
+    f_wd.close()
+    return dic_pb,dic_pro
+
+def solve_cha():
+    '''
+    It's the process of creating a character dictionary.
+    '''
+    f_cha = file_cha()
+    l = split_into_list(f_cha)
+    wd,prob = combine_cha(l)
+    dic_cha = dictionary(wd,prob)
     f_cha.close()
     return dic_cha
 
-def main():
-    dic,lex_dic=SolveWd()
-    dic_cha=SolveCha()
-    return dic,dic_cha,lex_dic
+def database_main():
+    dic_pb,dic_pro = solve_word()
+    dic_cha = solve_cha()
+    return dic_pb,dic_cha,dic_pro
 
 if __name__ == '__main__':
-    main()
+    database_main()
