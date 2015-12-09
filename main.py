@@ -1,5 +1,4 @@
 """The main function"""
-import Model
 import Controller
 import View
 
