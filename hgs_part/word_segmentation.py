@@ -10,7 +10,7 @@
 #-------------------------------------------------------------------------------
 
 
-from hgs_part import database, dts_calculate, mi, judge
+from . import database, dts_calculate, mi, judge
 
 dic_pb, dic_cha, dic_pro = database.database_main()
 
