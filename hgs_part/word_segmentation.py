@@ -21,9 +21,9 @@ def original_file():
 
 
 def term_segmentation(s):
-    '''
+    """
     Separate the proper nouns which are labeled as "TERM" in the wordlist.
-    '''
+    """
     global dic_pro
     method = []
     for i in range(7, 3, -1):  # Searching from 7 characters to 4.
