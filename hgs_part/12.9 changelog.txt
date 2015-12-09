@@ -1,0 +1,19 @@
+useful files:
+
+the core file: 
+sentence_segmentation.py
+word_segmentation.py
+
+the imported file: 
+database.py(create a lexicon)
+dts_calculate.py(calculate dt-score(an important concept in the algorithm))
+mi.py (calculate mi(an important concept in the algorithm))
+judge.py (judge whether the two characters should be bound or separated)
+calculate.py(calculate the mean, standard_derivation and so on)
+
+the txt file:
+wordlist.txt(word lexicon in txt form)
+characterlist.txt(character lexicon in txt form)
+original_file.txt(the whole article)
+original_file_wd.txt(one sentence)
+punctuation_standard_file.txt (used in sentence segmentation)
