@@ -2,7 +2,7 @@
 import tkinter as tk
 
 from View import TestView
-from hgs_part import __init__
+import hgs_part
 
 
 class MainController:
@@ -11,7 +11,7 @@ class MainController:
         self.root = tk.Tk()
         self.view = TestView(self.root)
         self.view.register(self)
-        self.model = __init__.Segmentation()
+        self.model = hgs_part.Segmentation()
 
     def run(self):
         self.view.show()
