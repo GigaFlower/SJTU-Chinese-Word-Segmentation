@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        濡€虫健1
+# Name:        濠碘槅鍨埀顒冩珪閸?
 # Purpose:
 #
 # Author:      Administrator
@@ -10,9 +10,9 @@
 #-------------------------------------------------------------------------------
 
 
-import database,dts_calculate,mi,judge
+import database , dts_calculate , mi,judge
 
-dic_pb,dic_cha,dic_pro = database.database_main()
+dic_pb , dic_cha , dic_pro = database.database_main()
 
 def original_file():
     f = open("original_file_wd.txt","r",encoding="utf-16")
@@ -63,16 +63,17 @@ def slice(mark_list,string):
             subs += r_string[num + 1]
     return subs
 
-
 def main():
     file = original_file()
     x = file.read()
     string , method = term_segmentation(x)
-    dts_mean,dts_standard_derivation,string_with_dtscore_list = dts_calculate.dts_calculate_main(string)
-    mi_mean,mi_standard_derivation,string_with_mi_list = mi.mi_main(string)
-    j = set_judge_property(dts_mean,dts_standard_derivation,string_with_dtscore_list,mi_mean,mi_standard_derivation,string_with_mi_list)
+    dts = dts_calculate.dts()
+    dts_mean , dts_standard_derivation , string_with_dtscore_list = dts.dts_calculate_main(string)
+    m = mi.mi()
+    mi_mean , mi_standard_derivation , string_with_mi_list = m.mi_main(string)
+    j = set_judge_property(dts_mean,dts_standard_derivation,string_with_dtscore_list , mi_mean,mi_standard_derivation , string_with_mi_list)
     mark_list = j.main()
-    subs = slice(mark_list,string)
+    subs = slice(mark_list , string)
     print(subs)
     file.close()
 

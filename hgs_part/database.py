@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        妯″潡1
+# Name:        濡€虫健1
 # Purpose:
 #
 # Author:      Administrator
@@ -11,7 +11,7 @@
 
 
 def file_word():
-    f = open("wordlist.txt","r", encoding = "utf-16")
+    f = open("wordlist_v2.txt","r", encoding = "utf-16")
     return f
 
 def file_cha():
