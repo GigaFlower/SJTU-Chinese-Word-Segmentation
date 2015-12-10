@@ -20,11 +20,13 @@ class TestView:
         self.ety3 = tk.Entry(self.root, textvariable=self.wrd_str)
 
         # Buttons
-        self.btn1 = tk.Button(self.root, text="分句")
-        self.btn2 = tk.Button(self.root, text="分词")
+        self.btn1 = tk.Button(self.root, text="分词")
+        self.btn2 = tk.Button(self.root, text="分句")
+        self.btn3 = tk.Button(self.root, text="打开文件")
 
         self.btn1.configure(command=self.__sen_seg)
         self.btn2.configure(command=self.__wrd_seg)
+        self.btn3.configure(command=self.__read_file)
 
     def show(self):
         """Show the GUI interface"""
@@ -33,6 +35,7 @@ class TestView:
         self.ety3.pack()
         self.btn1.pack(side='left', expand=True)
         self.btn2.pack(side='left', expand=True)
+        self.btn3.pack(side='left', expand=True)
 
     # Following functions involves conversation with controller
     def register(self, controller):
@@ -55,3 +58,7 @@ class TestView:
         after_wrd_seg = seg(self.sen_str.get())
         self.wrd_str.set(after_wrd_seg)
 
+    def __read_file(self):
+        s = self.raw_str
+
+        s.set(self.controller.read_file(s.get()))
