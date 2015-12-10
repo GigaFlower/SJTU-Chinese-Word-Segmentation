@@ -1,7 +1,9 @@
 """Code responsible for application logic"""
 import tkinter as tk
 from View import TestView
-import Model
+
+import hgs_part
+
 
 
 class MainController:
@@ -10,7 +12,8 @@ class MainController:
         self.root = tk.Tk()
         self.view = TestView(self.root)
         self.view.register(self)
-        self.model = Model.Segmentation()
+        self.model = hgs_part.Segmentation()
+
 
     def run(self):
         self.view.show()
