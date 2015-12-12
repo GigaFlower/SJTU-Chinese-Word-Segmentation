@@ -21,7 +21,8 @@ class mi:
         self.punctuation_string = file.read()
         file.close()
 
-    def divide(self, string):
+    @staticmethod
+    def divide(string):
         """
         This function will divide the whole sentence into several lists,
         including the adjacent 2-word-long substring.
@@ -43,7 +44,7 @@ class mi:
                 if x in self.punctuation_string:
                     return 9999999
                 else:
-                    p=dic_cha[x]
+                    p = dic_cha[x]
                     return int(p)
             except:
                 return 5
@@ -66,14 +67,14 @@ class mi:
                     pass
             return int(p)
 
-    def calculate_mi(self,two_long_word):
-        wd = two_long_word
+    def calculate_mi(self, character_pair):
+        wd = character_pair
         x = wd[0]
         y = wd[1]   # x means the first character, and y is the second character.
         prob_wd = self.search_prob(wd)
         prob_x = self.search_prob(x)
         prob_y = self.search_prob(y)
-        mi = math.log2(prob_wd * 1000 / ( prob_x * prob_y )
+        mi = math.log2(prob_wd * 1000 / (prob_x * prob_y))
         return mi
 
     def get_mi(self, string_list):
