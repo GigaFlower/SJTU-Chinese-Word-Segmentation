@@ -19,6 +19,10 @@ class TestView:
         self.ety2 = tk.Entry(self.root, textvariable=self.sen_str)
         self.ety3 = tk.Entry(self.root, textvariable=self.wrd_str)
 
+        self.ety1.pack()
+        self.ety2.pack()
+        self.ety3.pack()
+
         # Buttons
         self.btn1 = tk.Button(self.root, text="分词")
         self.btn2 = tk.Button(self.root, text="分句")
@@ -28,11 +32,6 @@ class TestView:
         self.btn2.configure(command=self.__wrd_seg)
         self.btn3.configure(command=self.__read_file)
 
-    def show(self):
-        """Show the GUI interface"""
-        self.ety1.pack()
-        self.ety2.pack()
-        self.ety3.pack()
         self.btn1.pack(side='left', expand=True)
         self.btn2.pack(side='left', expand=True)
         self.btn3.pack(side='left', expand=True)
@@ -60,5 +59,4 @@ class TestView:
 
     def __read_file(self):
         s = self.raw_str
-
         s.set(self.controller.read_file(s.get()))

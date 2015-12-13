@@ -81,20 +81,20 @@ class mi:
         string_with_mi_list = []
         for element in string_list:
             mi = self.calculate_mi(element)
-            new_info_list = [element,mi]
+            new_info_list = [element, mi]
             string_with_mi_list.append(new_info_list)
         return string_with_mi_list
 
-    def get_mi_mean_and_derivation(self,string_with_mi_list):
+    def get_mi_mean_and_derivation(self, string_with_mi_list):
         mi_list = [x[1] for x in string_with_mi_list]
         mean = calculate.calculate_average(mi_list)
         standard_derivation = calculate.calculate_list_standard_derivation(mi_list)
-        return mean,standard_derivation
+        return mean, standard_derivation
 
-    def mi_main(self,string):
+    def mi_main(self, string):
         self.get_number_standard()
         self.get_punc_standard()
         string_list = self.divide(string)
         string_with_mi_list = self.get_mi(string_list)
-        mean,standard_derivation = self.get_mi_mean_and_derivation(string_with_mi_list)
-        return mean,standard_derivation,string_with_mi_list
+        mean, standard_derivation = self.get_mi_mean_and_derivation(string_with_mi_list)
+        return mean, standard_derivation, string_with_mi_list
