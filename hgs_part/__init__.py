@@ -11,7 +11,6 @@ class Segmentation:
         return "%s(已分句)" % raw
 
     def word_segment(self, raw: str) -> str:
-
         return "%s(已分词)" % raw
 
 
