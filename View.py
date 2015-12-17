@@ -32,7 +32,6 @@ class DemoView:
         # setting wrd_text_pad
         self.wrd_text_pad = Text(self.root)
 
-
     def make_button(self):
         # Buttons
         btn1 = Button(self.root, text="分词")
