@@ -43,10 +43,10 @@ def main():
     or_f = get_origin_file()
     whole_string = or_f.read()
     punc_standard = get_punctuation_standard_file().read()  # "punc_standard" are sentence segment punctuations.
-    string_cutted = cut(whole_string,punc_standard)
+    string_cut = cut(whole_string,punc_standard)
     or_f.close()
     get_punctuation_standard_file().close()
-    return string_cutted
+    return string_cut
 
 if __name__ == '__main__':
     main()

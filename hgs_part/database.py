@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        濡€虫健1
+# Name:        婵☆垪鈧櫕鍋?
 # Purpose:
 #
 # Author:      Administrator
@@ -12,6 +12,10 @@
 
 def file_word():
     f = open("wordlist_v2.txt","r", encoding = "utf-16")
+    return f
+
+def file_termword():
+    f = open("wordlist.txt","r", encoding = "utf-16")
     return f
 
 def file_cha():
@@ -77,9 +81,24 @@ def solve_word():
     wd_l = combine(l)
     wd,pb,pro = relist(wd_l)
     dic_pb = dictionary(wd,pb)
-    dic_pro = dictionary(wd,pro)
     f_wd.close()
-    return dic_pb,dic_pro
+    return dic_pb
+
+def solve_term():
+    """
+    It's the process of creating a TERM dictionary.
+    """
+    f_wd = file_termword()
+    l = split_into_list(f_wd)
+    wd_l = combine(l)
+    wd,pb,pro = relist(wd_l)
+    length = len(pro)
+    new_wd_list = []
+    for num in range(length):
+        if pro[num] == ["TERM"]:
+            new_wd_list.append([wd[num],pro[num]])
+    dic_term = dict(new_wd_list)
+    return dic_term
 
 def solve_cha():
     '''
@@ -93,9 +112,10 @@ def solve_cha():
     return dic_cha
 
 def database_main():
-    dic_pb,dic_pro = solve_word()
+    dic_pb = solve_word()
+    dic_term = solve_term()
     dic_cha = solve_cha()
-    return dic_pb,dic_cha,dic_pro
+    return dic_pb,dic_cha,dic_term
 
 if __name__ == '__main__':
     database_main()

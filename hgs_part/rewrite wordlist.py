@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        妯″潡1
+# Name:        濡€虫健1
 # Purpose:
 #
 # Author:      Administrator
@@ -132,7 +132,7 @@ class rewrite_term_prob:
         name="wordlist_aft_term.txt"
         f=open(name,"w",encoding = "utf-16")
         f.write(s)
-        f.close
+        f.close()
 
     def main(self):
         f=self.file()
