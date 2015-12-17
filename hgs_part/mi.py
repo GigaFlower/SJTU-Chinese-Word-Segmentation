@@ -1,6 +1,6 @@
 
-
-import database,math,calculate
+import math
+from hgs_part import database, calculate
 
 dic_pb,dic_cha,dic_term = database.database_main()
 """
@@ -10,7 +10,9 @@ dic_pb,dic_cha,dic_term = database.database_main()
 """
 
 
+
 class mi:
+    """Mutual information of two Chinese character"""
     def __init__(self):
         """
         There are three class properties.
@@ -24,27 +26,29 @@ class mi:
         self.number_string = ""
         self.number_separate_string = ""
         self.punctuation_string = ""
-
+        
     def get_number_standard(self):
-        file = open("number_file.txt" , "r" , encoding = "utf-16")
+        file = open("number_file.txt", "r", encoding="utf-16")
         self.number_string = file.read()
+        file.close()
 
     def get_number_separate(self):
         file = open("number_separate_file.txt" , "r" , encoding = "utf-16")
         self.number_separate_string = file.read()
 
     def get_punc_standard(self):
-        file = open("punctuation_file_in_prob.txt","r", encoding = "utf-16")
+        file = open("punctuation_file_in_prob.txt", "r", encoding="utf-16")
         self.punctuation_string = file.read()
+        file.close()
 
-    def divide(self,string):
+    @staticmethod
+    def divide(string):
         """
         This function will divide the whole sentence into several lists,
         including the adjacent 2-word-long substring.
         """
         s = string
         subs = []
-        length = len(s)
         for i in range(len(s) - 1):
             subs.append(s[i:i+2])
         return subs
@@ -64,7 +68,7 @@ class mi:
                     # separated.
                     return 9999999
                 else:
-                    p=dic_cha[x]
+                    p = dic_cha[x]
                     return int(p)
             except:
                 # if the character is neither in the dictionary nor is a
@@ -117,7 +121,7 @@ class mi:
         prob_wd = self.search_prob(wd)
         prob_x = self.search_prob(x)
         prob_y = self.search_prob(y)
-        mi = math.log2( prob_wd * 1000 / ( prob_x * prob_y ))
+        mi = math.log2(prob_wd * 1000 / (prob_x * prob_y))
         return mi
 
     def get_mi(self,string_list):
@@ -128,7 +132,7 @@ class mi:
         string_with_mi_list = []
         for element in string_list:
             mi = self.calculate_mi(element)
-            new_info_list = [element,mi]
+            new_info_list = [element, mi]
             string_with_mi_list.append(new_info_list)
         return string_with_mi_list
 
@@ -140,7 +144,7 @@ class mi:
         mi_list = [x[1] for x in string_with_mi_list]
         mean = calculate.calculate_average(mi_list)
         standard_derivation = calculate.calculate_list_standard_derivation(mi_list)
-        return mean,standard_derivation
+        return mean, standard_derivation
 
     def mi_main(self,string):
         """
@@ -155,5 +159,5 @@ class mi:
         self.get_punc_standard()
         string_list = self.divide(string)
         string_with_mi_list = self.get_mi(string_list)
-        mean,standard_derivation = self.get_mi_mean_and_derivation(string_with_mi_list)
-        return mean,standard_derivation,string_with_mi_list
+        mean, standard_derivation = self.get_mi_mean_and_derivation(string_with_mi_list)
+        return mean, standard_derivation, string_with_mi_list

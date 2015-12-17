@@ -1,6 +1,6 @@
 """Code responsible for application logic"""
 import tkinter as tk
-from View import TestView
+from View import DemoView
 
 import hgs_part
 
@@ -9,12 +9,11 @@ class MainController:
     """The main controller of app activity"""
     def __init__(self):
         self.root = tk.Tk()
-        self.view = TestView(self.root)
+        self.view = DemoView(self.root)
         self.view.register(self)
         self.model = hgs_part.Segmentation()
 
     def run(self):
-        self.view.show()
         self.root.mainloop()
 
     @staticmethod
