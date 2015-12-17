@@ -6,7 +6,7 @@ class DemoView:
     def __init__(self, master: Tk):
         # Root window
         self.root = master
-        
+
         # Three main text pads
         self.raw_text_pad = Text()
         self.sen_text_pad = Listbox()
