@@ -2,7 +2,7 @@
 import tkinter as tk
 from View import DemoView
 
-import hgs_part
+import kernel
 
 
 class MainController:
@@ -11,7 +11,7 @@ class MainController:
         self.root = tk.Tk()
         self.view = DemoView(self.root)
         self.view.register(self)
-        self.model = hgs_part.Segmentation()
+        self.model = kernel.Segmentation()
 
     def run(self):
         self.root.mainloop()
