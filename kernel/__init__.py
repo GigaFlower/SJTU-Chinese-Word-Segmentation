@@ -4,7 +4,7 @@ Code responsible for service logic
 """
 
 import time
-import dts_calculate, mi, judge, term_segmentation
+import database, dts_calculate, mi, judge, term_segmentation
 
 
 class Segmentation:
@@ -16,8 +16,10 @@ class Segmentation:
         # Initialize rules
         self.rules = Rule()
 
-        self.sen_punc_stan = open("punctuation_standard_file.txt", "r", encoding="utf-16").read()
+        self.sen_punc_stan = open("punctuation_standard_file.txt", "r",
+                             encoding="utf-16").read()
         # "sen_punc_stan" are sentence segment punctuations.
+        self.dic_pb, self.dic_cha, self.dic_term = database.get_dictionary()
 
         self.t = term_segmentation.Term_seg()
         self.dts = dts_calculate.Dts()
@@ -64,14 +66,18 @@ class Segmentation:
         will be combined again with the separate mark "|".
         """
 
+
+        self.set_class_property_dic(self.t)
         string_aft_termseg, mark_list = self.t.retrieve(raw)
 
         string = " " + string_aft_termseg + " "
         # Add " " in front of  the first character and behind the last character,
         # which will be used as an auxiliary in the calculation of mi and dtscore.
 
+        self.set_class_property_dic(self.dts)
         dts_mean , dts_standard_derivation , string_with_dtscore_list = self.dts.dts_calculate_main(string)
 
+        self.set_class_property_dic(self.m)
         mi_mean , mi_standard_derivation , string_with_mi_list = self.m.mi_main(string)
 
         self.set_judge_property(dts_mean,dts_standard_derivation,
@@ -101,6 +107,21 @@ class Segmentation:
             else:
                 subs += string[num + 1]
         return subs
+
+    def set_class_property_dic(self, instance):
+        """
+        "instance" is in the form of "self.xx"
+
+        This function will set the dictionary properties of a particular
+        instance.
+
+        "dic_pb" is the dictionary with words and their probabilities.
+        "dic_cha" is the dictionary with characters and their probabilities.
+        "dic_term" is the dictionary with words marked with "TERM".
+        """
+        instance.dic_pb = self.dic_pb
+        instance.dic_cha = self.dic_cha
+        instance.dic_term = self.dic_term
 
     def set_judge_property(self,dts_mean,dts_st_der,string_dts_list,mi_mean,
                             mi_st_der,string_mi_list,mark_list):
@@ -138,6 +159,8 @@ class Rule:
     """This class represents a rule library"""
     pass
 
+a=time.time()
 s=Segmentation()
-print(s.word_segment("我支持湖人队"))
-print(s.sentence_segment("我支持湖人队。我爱你。"))
+print(s.word_segment("李克强与习近平会晤，共同磋商奔向太阳大计"))
+b=time.time()
+print(b-a)

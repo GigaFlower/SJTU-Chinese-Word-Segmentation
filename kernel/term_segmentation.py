@@ -1,25 +1,18 @@
 
 
-import database
-
-dic_pb,dic_cha,dic_term = database.database_main()
-"""
-"dic_pb" is the dictionary with words and their probabilities.
-"dic_cha" is the dictionary with characters and their probabilities.
-"dic_term" is the dictionary with words marked with "TERM".
-"""
-
-
 class Term_seg:
     def __init__(self):
         self.mark_list = []
+        self.dic_pb = {}
+        self.dic_cha = {}
+        self.dic_term = {}
 
     def set_mark_list(self,counter,num):
         for list_num in range(counter , counter + num - 1):
             self.mark_list[list_num] = "bound"
 
     def term_segmentation(self, counter, num, string):
-        if string[counter : counter + num] in dic_term:
+        if string[counter : counter + num] in self.dic_term:
             string = "".join([string[:counter]," " * num, string[counter + num:]])
             self.set_mark_list(counter,num)
         else:
