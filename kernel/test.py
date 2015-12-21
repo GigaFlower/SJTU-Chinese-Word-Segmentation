@@ -54,12 +54,14 @@ def test(amount=20):
     print('All %d tests done.' % amount)
     print('In all %d splits' % total_cnt)
     print('%d splits are missed and' % mis_cnt)
-    print('%d unnecessary split are made' % uny_cnt)
+    print('%d unnecessary splits are made' % uny_cnt)
 
-    print('Precision:%.2f%%' % (1-(mis_cnt+uny_cnt)/test_cnt))
+    precision = 1-(mis_cnt+uny_cnt)/total_cnt
+    precision *= 100
+    print('Precision:%.2f%%' % precision)
 
 
-def convert_to_mark_list(string:str) -> list:
+def convert_to_mark_list(string: str) -> list:
     """
     This function convert a segmentation result back to a list of
     'b' stands for 'bounded' and 's' for 'separated'
