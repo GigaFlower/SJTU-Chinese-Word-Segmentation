@@ -138,6 +138,7 @@ class Rule:
     """This class represents a rule library"""
     pass
 
-s=Segmentation()
-print(s.word_segment("我支持湖人队"))
-print(s.sentence_segment("我支持湖人队。我爱你。"))
+if __name__ == '__main__':
+    s=Segmentation()
+    print(s.word_segment("我支持湖人队"))
+    print(s.sentence_segment("我支持湖人队。我爱你。"))
