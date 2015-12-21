@@ -1,3 +1,4 @@
+
 """
 This file is the calculating part.
 It can be used to calculate the average and the standard derivation of the list.
@@ -7,6 +8,9 @@ It can be used to calculate the average and the standard derivation of the list.
 import math
 
 def calculate_average(num_list):
+    """
+    This function will calculate the average of the given list.
+    """
     length = len(num_list)
     sum = 0
     for element in num_list:
@@ -18,6 +22,9 @@ def calculate_average(num_list):
     return average
 
 def calculate_list_standard_derivation(num_list):
+    """
+    This function will calculate the standard derivation of the given list.
+    """
     length = len(num_list)
     average = calculate_average(num_list)
     variance = 0
