@@ -1,7 +1,8 @@
-
-
-import dts_calculate,mi
-
+"""
+DELTA_1, DELTA_2, DELTA_3 are the "bound" condition parameter, which have the relationship of D1 < D2 < D3.
+KESI_1, KESI_2, KESI_3 are the "separated" condition parameter, which have the relationship of K1 < K2 < K3.
+THETA is the mi valve parameter, when the word's mi is above THETA, it tends to be bound and vice versa.
+"""
 DELTA_1 = -2
 DELTA_2 = -1
 DELTA_3 = 0
@@ -9,12 +10,6 @@ KESI_1 = 24
 KESI_2 = 27
 KESI_3 = 30
 THETA = 2.5
-
-"""
-DELTA_1, DELTA_2, DELTA_3 are the "bound" condition parameter, which have the relationship of D1 < D2 < D3.
-KESI_1, KESI_2, KESI_3 are the "separated" condition parameter, which have the relationship of K1 < K2 < K3.
-THETA is the mi valve parameter, when the word's mi is above THETA, it tends to be bound and vice versa.
-"""
 
 
 class Judge:

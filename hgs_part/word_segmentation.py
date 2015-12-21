@@ -1,9 +1,9 @@
 
 
 import time
-import database , dts_calculate , mi,judge , term_segmentation
+from . import database, dts_calculate, mi, judge, term_segmentation
 
-dic_pb , dic_cha , dic_pro = database.database_main()
+dic_pb, dic_cha, dic_pro = database.database_main()
 
 """
 "dic_pb" is the dictionary with words and their probabilities.
@@ -17,7 +17,7 @@ def set_judge_property(dts_mean,dts_st_der,string_dts_list,mi_mean,mi_st_der,str
     This function will be used to set the properties of the class "judge" in
     judge.py.
     """
-    j = judge.judge()
+    j = judge.Judge()
     j.dts_mean = dts_mean
     j.dts_standard_derivation = dts_st_der
     j.dts_list = [x[1] for x in string_dts_list]
@@ -63,7 +63,7 @@ def main(x):
     string = " " + string_aft_termseg + " "
     # Add " " in front of  the first character and behind the last character,
     # which will be used as an auxiliary in the calculation of mi and dtscore.
-    dts = dts_calculate.dts()
+    dts = dts_calculate.Dts()
     dts_mean , dts_standard_derivation , string_with_dtscore_list = dts.dts_calculate_main(string)
     m = mi.mi()
     mi_mean , mi_standard_derivation , string_with_mi_list = m.mi_main(string)

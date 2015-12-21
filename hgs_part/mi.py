@@ -1,6 +1,6 @@
 
 import math
-from hgs_part import database, calculate
+from . import database, calculate
 
 dic_pb,dic_cha,dic_term = database.database_main()
 """
@@ -8,7 +8,6 @@ dic_pb,dic_cha,dic_term = database.database_main()
 "dic_cha" is the dictionary with characters and their probabilities.
 "dic_term" is the dictionary with words marked with "TERM".
 """
-
 
 
 class mi:

@@ -1,6 +1,6 @@
 
 
-import database,math
+from . import database
 
 dic_pb,dic_cha,dic_term = database.database_main()
 """

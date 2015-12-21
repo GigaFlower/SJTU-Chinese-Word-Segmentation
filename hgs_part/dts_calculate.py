@@ -1,6 +1,7 @@
 
 
-import database,math,calculate
+from . import database, calculate
+import math
 
 dic_pb,dic_cha,dic_term = database.database_main()
 """
@@ -10,7 +11,7 @@ dic_pb,dic_cha,dic_term = database.database_main()
 """
 
 
-class dts:
+class Dts:
     def __init__(self):
         """
         There are three class properties.
