@@ -68,7 +68,7 @@ def main(x):
     m = mi.mi()
     mi_mean , mi_standard_derivation , string_with_mi_list = m.mi_main(string)
     j = set_judge_property(dts_mean,dts_standard_derivation,string_with_dtscore_list , mi_mean,mi_standard_derivation , string_with_mi_list , mark_list)
-    mark_list = j.main()
+    mark_list = j.get_mark_list()
     subs = combine(mark_list , x)
     print(subs)
 

@@ -16,7 +16,8 @@ KESI_1, KESI_2, KESI_3 are the "separated" condition parameter, which have the r
 THETA is the mi valve parameter, when the word's mi is above THETA, it tends to be bound and vice versa.
 """
 
-class judge:
+
+class Judge:
     def __init__(self):
         """
         There are seven class properties.
@@ -31,138 +32,140 @@ class judge:
         self.dts_mean = 0
         self.dts_standard_derivation = 0
         self.dts_list = []
+
         self.mi_mean = 0
         self.mi_standard_derivation = 0
         self.mi_list = []
+
         self.mark_list = []
 
-    def judge_local_max(self,num):
+    def judge_local_max(self, ind):
         """
         Judge whether the particular dtscore is the local maximum in the dtscore
          list.
         """
-        if num == 0:
+        if ind == 0:
             # If the particular dtscore's index is 0, only compare with its
             # right neighbor.
-            return self.dts_list[num] > self.dts_list[num + 1]
-        elif num == len( self.dts_list ) - 1:
+            return self.dts_list[ind] > self.dts_list[ind + 1]
+        elif ind == len(self.dts_list) - 1:
             # If the particular dtscore is the last one in the list, only
             # compare with its left neighbor.
-            return self.dts_list[num] > self.dts_list[num - 1]
+            return self.dts_list[ind] > self.dts_list[ind - 1]
         else:
             # In other cases, compare with its right neighbor and left neighbor.
-            return self.dts_list[num] > self.dts_list[num - 1] and self.dts_list[num] > self.dts_list[num + 1]
+            return self.dts_list[ind] > self.dts_list[ind - 1] and self.dts_list[ind] > self.dts_list[ind + 1]
 
-    def judge_local_min(self,num):
+    def judge_local_min(self, ind):
         """
         Judge whether the particular dtscore is the local minimum in the dtscore list.
         """
-        if num == 0:
+        if ind == 0:
             # If the particular dtscore's index is 0, only compare with its
             # right neighbor.
-            return self.dts_list[num] < self.dts_list[num + 1]
-        elif num == len( self.dts_list ) - 1:
+            return self.dts_list[ind] < self.dts_list[ind + 1]
+        elif ind == len( self.dts_list ) - 1:
             # If the particular dtscore is the last one in the list, only
             # compare with its left neighbor.
-            return self.dts_list[num] < self.dts_list[num - 1]
+            return self.dts_list[ind] < self.dts_list[ind - 1]
         else:
             # In other cases, compare with its right neighbor and left neighbor.
-            return self.dts_list[num] < self.dts_list[num - 1] and self.dts_list[num] < self.dts_list[num + 1]
+            return self.dts_list[ind] < self.dts_list[ind - 1] and self.dts_list[ind] < self.dts_list[ind + 1]
 
-    def calculate_height_or_deepth_of_local_ext(self,num):
+    def calculate_height_or_depth_of_local_ext(self, ind):
         """
         If the particular dtscore is the local extremum, then calculate the
-        height of deepth of it.
+        height of depth of it.
         The formula is:
-            height_or_deepth = min ( local_ext - value(left_neighbor), local_ext - value(right_neighbor) )
+            height_or_depth = min ( local_ext - value(left_neighbor), local_ext - value(right_neighbor) )
         """
-        if num == 0:
+        if ind == 0:
             # If the particular dtscore's index is 0, only compare with its
             # right neighbor.
-            ext_dts = self.dts_list[num] - self.dts_list[num + 1]
-        elif num == len( self.dts_list ) - 1:
+            ext_dts = self.dts_list[ind] - self.dts_list[ind + 1]
+        elif ind == len( self.dts_list ) - 1:
             # If the particular dtscore's index is 0, only compare with its
             # left neighbor.
-            ext_dts = self.dts_list[num] - self.dts_list[num - 1]
+            ext_dts = self.dts_list[ind] - self.dts_list[ind - 1]
         else:
             # In other cases, compare with its right neighbor and left neighbor.
-            ext_dts = min( abs( self.dts_list[num] - self.dts_list[num - 1] ) , abs( self.dts_list[num] - self.dts_list[num + 1]) )
+            ext_dts = min( abs( self.dts_list[ind] - self.dts_list[ind - 1] ) , abs( self.dts_list[ind] - self.dts_list[ind + 1]) )
         return ext_dts
 
-    def judge_right_second_local_max(self,num):
+    def judge_right_second_local_max(self, ind):
         """
-        "num" is the current number, i.e. the index of the potential second local maximum.
-
+        "ind" is the index of the potential second local maximum.
         """
-        if num != 0 and self.judge_local_max(num - 1):
-            if num == 1:
-                return self.dts_list[num] > self.dts_list[num + 1]
-            elif num == len( self.dts_list ) - 1:
-                return self.dts_list[num] > self.dts_list[num - 2]
+        if ind != 0 and self.judge_local_max(ind - 1):
+            if ind == 1:
+                return self.dts_list[ind] > self.dts_list[ind + 1]
+            elif ind == len(self.dts_list) - 1:
+                return self.dts_list[ind] > self.dts_list[ind - 2]
             else:
-                return self.dts_list[num] > self.dts_list[num - 2] and self.dts_list[num] > self.dts_list[num + 1]
+                return self.dts_list[ind] > self.dts_list[ind - 2] and self.dts_list[ind] > self.dts_list[ind + 1]
         else:
             return False
 
-    def judge_left_second_local_max(self,num):  # "num" is the current number, i.e. the index of the potential second local maximum.
-        if num != ( len(self.dts_list) - 1 ) and self.judge_local_max(num + 1):
-            if num == 0:
-                return self.dts_list[num] > self.dts_list[num + 2]
-            elif num == len( self.dts_list ) - 2:
-                return self.dts_list[num] > self.dts_list[num - 1]
+    def judge_left_second_local_max(self, ind):
+        if ind != ( len(self.dts_list) - 1 ) and self.judge_local_max(ind + 1):
+            if ind == 0:
+                return self.dts_list[ind] > self.dts_list[ind + 2]
+            elif ind == len( self.dts_list ) - 2:
+                return self.dts_list[ind] > self.dts_list[ind - 1]
             else:
-                return self.dts_list[num] > self.dts_list[num - 1] and self.dts_list[num] > self.dts_list[num + 2]
+                return self.dts_list[ind] > self.dts_list[ind - 1] and self.dts_list[ind] > self.dts_list[ind + 2]
         else:
             return False
 
-    def judge_right_second_local_min(self,num):  # "num" is the current number, i.e. the index of the potential second local minimum.
-        if num != 0 and self.judge_local_min(num - 1):
-            if num == 1:
-                return self.dts_list[num] < self.dts_list[num + 1]
-            elif num == len( self.dts_list ) - 1:
-                return self.dts_list[num] < self.dts_list[num - 2]
+    def judge_right_second_local_min(self, ind):
+        if ind != 0 and self.judge_local_min(ind - 1):
+            if ind == 1:
+                return self.dts_list[ind] < self.dts_list[ind + 1]
+            elif ind == len(self.dts_list) - 1:
+                return self.dts_list[ind] < self.dts_list[ind - 2]
             else:
-                return self.dts_list[num] < self.dts_list[num - 2] and self.dts_list[num] < self.dts_list[num + 1]
+                return self.dts_list[ind] < self.dts_list[ind - 2] and self.dts_list[ind] < self.dts_list[ind + 1]
         else:
             return False
 
-    def judge_left_second_local_min(self,num):  # "num" is the current number, i.e. the index of the potential second local minimum.
-        if num != ( len(self.dts_list) - 1 ) and self.judge_local_min(num + 1):
-            if num == 0:
-                return self.dts_list[num] < self.dts_list[num + 2]
-            elif num == len( self.dts_list ) - 2:
-                return self.dts_list[num] < self.dts_list[num - 1]
+    def judge_left_second_local_min(self, ind):
+        if ind != (len(self.dts_list) - 1) and self.judge_local_min(ind + 1):
+            if ind == 0:
+                return self.dts_list[ind] < self.dts_list[ind + 2]
+            elif ind == len(self.dts_list) - 2:
+                return self.dts_list[ind] < self.dts_list[ind - 1]
             else:
-                return self.dts_list[num] < self.dts_list[num - 1] and self.dts_list[num] < self.dts_list[num + 2]
+                return self.dts_list[ind] < self.dts_list[ind - 1] and self.dts_list[ind] < self.dts_list[ind + 2]
         else:
             return False
 
-    def calculate_distance_right_local_ext(self,num):
-        dis = abs( self.dts_list[num] - self.dts_list[num - 1] )
+    def calculate_distance_right_local_ext(self, ind):
+        dis = abs( self.dts_list[ind] - self.dts_list[ind - 1] )
         return dis
 
-    def calculate_distance_left_local_ext(self,num):
-        dis = abs( self.dts_list[num] - self.dts_list[num + 1] )
+    def calculate_distance_left_local_ext(self, ind):
+        dis = abs( self.dts_list[ind] - self.dts_list[ind + 1] )
         return dis
 
-    def calculate_lrmin(self,num):
-        if num == 0:
-            lrmin = abs( self.dts_list[num] - self.dts_list[num + 2] )
-        elif num == len( self.dts_list ) - 1 or num == len( self.dts_list ) - 2:
-            lrmin = abs( self.dts_list[num] - self.dts_list[num - 1] )
+    def calculate_lrmin(self, ind):
+        if ind == 0:
+            lrmin = abs( self.dts_list[ind] - self.dts_list[ind + 2] )
+        elif ind == len( self.dts_list ) - 1 or ind == len( self.dts_list ) - 2:
+            lrmin = abs( self.dts_list[ind] - self.dts_list[ind - 1] )
         else:
-            lrmin = min(abs( self.dts_list[num] - self.dts_list[num + 2] ) , abs( self.dts_list[num] - self.dts_list[num - 1] ))
+            lrmin = min(abs( self.dts_list[ind] - self.dts_list[ind + 2] ) ,
+                        abs( self.dts_list[ind] - self.dts_list[ind - 1] ))
         return lrmin
 
-    def case_Ac_or_Cb(self,num):
-        if self.judge_local_max(num):
-            h_dts = self.calculate_height_or_deepth_of_local_ext(num)
+    def case_Ac_or_Cb(self, ind):
+        if self.judge_local_max(ind):
+            h_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if h_dts > DELTA_1:
                 return "bound"
             else:
                 return "?"
-        elif self.judge_local_min(num):
-            d_dts = self.calculate_height_or_deepth_of_local_ext(num)
+        elif self.judge_local_min(ind):
+            d_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if d_dts > KESI_2:
                 return "separated"
             else:
@@ -170,15 +173,15 @@ class judge:
         else:
             return "?"
 
-    def case_Bc_or_Db(self,num):
-        if self.judge_local_max(num):
-            h_dts = self.calculate_height_or_deepth_of_local_ext(num)
+    def case_Bc_or_Db(self, ind):
+        if self.judge_local_max(ind):
+            h_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if h_dts > DELTA_2:
                 return "bound"
             else:
                 return "?"
-        elif self.judge_local_min(num):
-            d_dts = self.calculate_height_or_deepth_of_local_ext(num)
+        elif self.judge_local_min(ind):
+            d_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if d_dts > KESI_1:
                 return "separated"
             else:
@@ -186,23 +189,23 @@ class judge:
         else:
             return "?"
 
-    def case_Cc(self,num):
-        if self.judge_local_max(num):
-            h_dts = self.calculate_height_or_deepth_of_local_ext(num)
+    def case_Cc(self, ind):
+        if self.judge_local_max(ind):
+            h_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if h_dts > DELTA_3:
                 return "bound"
             else:
                 return "?"
-        elif self.judge_local_min(num):
+        elif self.judge_local_min(ind):
             return "separated"
         else:
             return "?"
 
-    def case_Bb(self,num):
-        if self.judge_local_max(num):
+    def case_Bb(self, ind):
+        if self.judge_local_max(ind):
             return "bound"
-        elif self.judge_local_min(num):
-            d_dts = self.calculate_height_or_deepth_of_local_ext(num)
+        elif self.judge_local_min(ind):
+            d_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if d_dts > KESI_3:
                 return "separated"
             else:
@@ -210,16 +213,16 @@ class judge:
         else:
             return "?"
 
-    def case_second_round(self,num):
-        lrmin = self.calculate_lrmin(num)
-        if self.judge_left_second_local_max(num) or self.judge_left_second_local_min(num):
-            dis = self.calculate_distance_left_local_ext(num)
+    def case_second_round(self, ind):
+        lrmin = self.calculate_lrmin(ind)
+        if self.judge_left_second_local_max(ind) or self.judge_left_second_local_min(ind):
+            dis = self.calculate_distance_left_local_ext(ind)
             if dis < 0.5 * lrmin:
                 return "right"
             else:
                 return "?"
-        elif self.judge_right_second_local_max(num) or self.judge_right_second_local_min(num):
-            dis = self.calculate_distance_right_local_ext(num)
+        elif self.judge_right_second_local_max(ind) or self.judge_right_second_local_min(ind):
+            dis = self.calculate_distance_right_local_ext(ind)
             if dis < 0.5 * lrmin:
                 return "left"
             else:
@@ -229,10 +232,10 @@ class judge:
 
     def first_round(self):
         length = len(self.dts_list)
-        for num in range(length):
-            if self.mark_list[num] == 0:
-                current_dts = self.dts_list[num]
-                current_mi = self.mi_list[num]
+        for ind in range(length):
+            if self.mark_list[ind] == 0:
+                current_dts = self.dts_list[ind]
+                current_mi = self.mi_list[ind]
                 A = current_dts > self.dts_standard_derivation
                 B = 0 < current_dts <= self.dts_standard_derivation
                 C = -self.dts_standard_derivation < current_dts <= 0
@@ -242,19 +245,19 @@ class judge:
                 c = self.mi_mean -self. mi_standard_derivation < current_mi <= self.mi_mean
                 d = current_mi <= self.mi_mean - self.mi_standard_derivation
                 if a or ( A and b ):  # Case: Aa or Ba or Ca or Da or Ab
-                    self.mark_list[num] = "bound"
+                    self.mark_list[ind] = "bound"
                 elif d or ( D and c ): # Case: Ad or Bd or Cd or Dd or Dc
-                    self.mark_list[num] = "separated"
+                    self.mark_list[ind] = "separated"
                 elif ( A and c ) or ( C and b ):  # Case: Ac or Cb
-                    self.mark_list[num] = self.case_Ac_or_Cb(num)
+                    self.mark_list[ind] = self.case_Ac_or_Cb(ind)
                 elif ( B and c ) or ( D and b ):  # Case: Bc or Db
-                    self.mark_list[num] = self.case_Bc_or_Db(num)
+                    self.mark_list[ind] = self.case_Bc_or_Db(ind)
                 elif C and c:  # Case: Cc
-                    self.mark_list[num] = self.case_Cc(num)
+                    self.mark_list[ind] = self.case_Cc(ind)
                 elif B and b:  # Case: Bb
-                    self.mark_list[num] = self.case_Bb(num)
+                    self.mark_list[ind] = self.case_Bb(ind)
                 else:       # other cases
-                    self.mark_list[num] = "?"
+                    self.mark_list[ind] = "?"
             else:
                 pass
 
@@ -275,7 +278,7 @@ class judge:
             else:
                 pass
 
-    def main(self):
+    def get_mark_list(self):
         self.first_round()
         self.second_round()
         self.third_round()
