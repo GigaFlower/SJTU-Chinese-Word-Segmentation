@@ -1,30 +1,31 @@
 
 
-import database, calculate
+import calculate
 import math
-
-dic_pb,dic_cha,dic_term = database.database_main()
-"""
-"dic_pb" is the dictionary with words and their probabilities.
-"dic_cha" is the dictionary with characters and their probabilities.
-"dic_term" is the dictionary with words marked with "TERM".
-"""
 
 
 class Dts:
+    """Delta t-score of two Chinese character"""
     def __init__(self):
         """
-        There are three class properties.
+        There are six class properties.
+
         "number_string" represents some special characters most of which has the
         meaning of numbers.
         "number_separate_string" represents some special characters, and when
         they follows the characters in "number_string", they tend to separate.
         "punctuation_string" represents some punctuations in the sentences which
         has the same usage of the separate mark.
+        "dic_pb" is the dictionary with words and their probabilities.
+        "dic_cha" is the dictionary with characters and their probabilities.
+        "dic_term" is the dictionary with words marked with "TERM".
         """
         self.number_string = ""
         self.number_separate_string = ""
         self.punctuation_string = ""
+        self.dic_pb = {}
+        self.dic_cha = {}
+        self.dic_term = {}
 
     def get_number_standard(self):
         file = open("number_file.txt" , "r" , encoding = "utf-16")
@@ -56,7 +57,6 @@ class Dts:
         This function will search for the probability of the certain word
         or character.
         """
-        global dic_pb,dic_cha
         x = certain_word
         if len(x) == 1:
             try:
@@ -66,7 +66,7 @@ class Dts:
                     # separated.
                     return 9999999
                 else:
-                    p=dic_cha[x]
+                    p = self.dic_cha[x]
                     return int(p)
             except:
                 # if the character is neither in the dictionary nor is a
@@ -78,8 +78,8 @@ class Dts:
                     # should return a very big probability in order to make it
                     # separated.
                     return 5
-            elif x in dic_pb:
-                p = int(dic_pb[x])
+            elif x in self.dic_pb:
+                p = int(self.dic_pb[x])
                 if x[0] in self.number_string and x[1] in self.number_string:
                     # if the word's two characters are both number characters,
                     # they tend to be bound.
@@ -128,14 +128,13 @@ class Dts:
         Then calculate the average.
         Finally, calculate the variance of xy.
         """
-        global dic_pb
         sum = 0
         c = 0
         try:
-            for word in dic_pb:
+            for word in self.dic_pb:
                 if xy[0] in word or xy[1] in word:
-                    k = dic_pb[word]
-                    sum += int(dic_pb[word])
+                    k = self.dic_pb[word]
+                    sum += int(self.dic_pb[word])
                     c += 1
                 else:
                     pass

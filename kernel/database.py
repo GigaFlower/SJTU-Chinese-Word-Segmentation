@@ -5,7 +5,7 @@ def file_word():
     return f
 
 def file_termword():
-    f = open("wordlist.txt","r", encoding = "utf-16")
+    f = open("termlist.txt","r", encoding = "utf-16")
     return f
 
 def file_cha():
@@ -99,7 +99,7 @@ def solve_term():
     whole list consists of many elements which represents a particular word.
     After that, rearrange the list so that three lists are created, including
     the word list, the probability list and the property list.
-    Finally make the dictionary of the words and their probabilities.
+    Finally make the dictionary of the words and their properties.
     """
     f_wd = file_termword()
     l = split_into_list(f_wd)
@@ -108,15 +108,22 @@ def solve_term():
     length = len(pro)
     new_wd_list = []
     for num in range(length):
-        if pro[num] == ["TERM"]:
-            new_wd_list.append([wd[num],pro[num]])
+        new_wd_list.append([wd[num],pro[num]])
     dic_term = dict(new_wd_list)
     return dic_term
 
 def solve_cha():
-    '''
-    It's the process of creating a character dictionary.
-    '''
+    """
+    This is the main structure of constructing the database of the characters.
+
+    First, read the character file and split the content into lists.
+    Then, combine the related lists of the same character into one list, and
+    thus the whole list consists of many elements which represents a particular
+    character.
+    After that, rearrange the list so that two lists are created, including
+    the character list and the probability list.
+    Finally make the dictionary of the charaters and their probabilities.
+    """
     f_cha = file_cha()
     l = split_into_list(f_cha)
     wd,prob = combine_cha(l)
@@ -124,11 +131,11 @@ def solve_cha():
     f_cha.close()
     return dic_cha
 
-def database_main():
+def get_dictionary():
     dic_pb = solve_word()
     dic_term = solve_term()
     dic_cha = solve_cha()
     return dic_pb,dic_cha,dic_term
 
 if __name__ == '__main__':
-    database_main()
+    get_dictionary()

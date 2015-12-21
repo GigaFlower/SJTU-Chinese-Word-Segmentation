@@ -19,23 +19,25 @@ class Judge:
         """
         There are seven class properties.
         "dts_mean" represents the mean value of dtscore list.
-        "dts_standard_derivation" represents the standard derivation of dtscore list.
+        "dts_standard_derivation" represents the standard derivation of dtscore
+        list.
         "dts_list" represents the dtscore list (only with numbers).
         "mi_mean" represents the mean value of mi list.
         "mi_standard_derivation" represents the standard derivation of mi list.
         "mi_list" represents the mi list (only with numbers).
-        "mark_list" represents the mark list which has the relationships between all of the adjacent characters.
+        "mark_list" represents the mark list which has the relationships between
+        all of the adjacent characters.
         """
 
         self.dts_mean = 0
         self.dts_standard_derivation = 0
         self.dts_list = []
-        # Only setting the dts_list with only numbers in judge.py
+        # Only setting the dts_list with only numbers in judge.py.
 
         self.mi_mean = 0
         self.mi_standard_derivation = 0
         mi_list = []
-        # Only setting the mi_list with only numbers to judge.py
+        # Only setting the mi_list with only numbers to judge.py.
         self.mi_list = mi_list[1:-1]
         # The first and the last element in mi_list contains the blank,
         # so it is of no use and should be abandoned.
@@ -61,7 +63,8 @@ class Judge:
 
     def judge_local_min(self, ind):
         """
-        Judge whether the particular dtscore is the local minimum in the dtscore list.
+        Judge whether the particular dtscore is the local minimum in the dtscore
+        list.
         """
         if ind == 0:
             # If the particular dtscore's index is 0, only compare with its
@@ -80,7 +83,8 @@ class Judge:
         If the particular dtscore is the local extremum, then calculate the
         height of depth of it.
         The formula is:
-            height_or_depth = min ( local_ext - value(left_neighbor), local_ext - value(right_neighbor) )
+            height_or_depth = min ( local_ext - value(left_neighbor),
+                                    local_ext - value(right_neighbor) )
         """
         if ind == 0:
             # If the particular dtscore's index is 0, only compare with its
@@ -92,11 +96,15 @@ class Judge:
             ext_dts = self.dts_list[ind] - self.dts_list[ind - 1]
         else:
             # In other cases, compare with its right neighbor and left neighbor.
-            ext_dts = min( abs( self.dts_list[ind] - self.dts_list[ind - 1] ) , abs( self.dts_list[ind] - self.dts_list[ind + 1]) )
+            ext_dts = min( abs( self.dts_list[ind] - self.dts_list[ind - 1] ) ,
+                           abs( self.dts_list[ind] - self.dts_list[ind + 1]) )
         return ext_dts
 
     def judge_right_second_local_max(self, ind):
         """
+        This function will judge whether a certain element is the right second
+        local maximum.
+
         "ind" is the index of the potential second local maximum.
         """
         if ind != 0 and self.judge_local_max(ind - 1):
@@ -110,6 +118,9 @@ class Judge:
             return False
 
     def judge_left_second_local_max(self, ind):
+        """
+        "ind" is the index of the potential second local maximum.
+        """
         if ind != ( len(self.dts_list) - 1 ) and self.judge_local_max(ind + 1):
             if ind == 0:
                 return self.dts_list[ind] > self.dts_list[ind + 2]
@@ -121,6 +132,9 @@ class Judge:
             return False
 
     def judge_right_second_local_min(self, ind):
+        """
+        "ind" is the index of the potential second local minimum.
+        """
         if ind != 0 and self.judge_local_min(ind - 1):
             if ind == 1:
                 return self.dts_list[ind] < self.dts_list[ind + 1]
@@ -132,6 +146,9 @@ class Judge:
             return False
 
     def judge_left_second_local_min(self, ind):
+        """
+        "ind" is the index of the potential second local minimum.
+        """
         if ind != (len(self.dts_list) - 1) and self.judge_local_min(ind + 1):
             if ind == 0:
                 return self.dts_list[ind] < self.dts_list[ind + 2]
