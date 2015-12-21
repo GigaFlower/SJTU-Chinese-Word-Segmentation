@@ -13,7 +13,9 @@ THETA = 2.5
 
 
 class Judge:
+
     def __init__(self):
+
         """
         There are seven class properties.
         "dts_mean" represents the mean value of dtscore list.
@@ -24,13 +26,19 @@ class Judge:
         "mi_list" represents the mi list (only with numbers).
         "mark_list" represents the mark list which has the relationships between all of the adjacent characters.
         """
+
         self.dts_mean = 0
         self.dts_standard_derivation = 0
         self.dts_list = []
+        # Only setting the dts_list with only numbers in judge.py
 
         self.mi_mean = 0
         self.mi_standard_derivation = 0
-        self.mi_list = []
+        mi_list = []
+        # Only setting the mi_list with only numbers to judge.py
+        self.mi_list = mi_list[1:-1]
+        # The first and the last element in mi_list contains the blank,
+        # so it is of no use and should be abandoned.
 
         self.mark_list = []
 

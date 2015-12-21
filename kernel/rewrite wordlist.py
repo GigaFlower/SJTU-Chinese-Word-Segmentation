@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        濡€虫健1
+# Name:        婵☆垪鈧櫕鍋?
 # Purpose:
 #
 # Author:      Administrator
@@ -134,16 +134,36 @@ class rewrite_term_prob:
         f.write(s)
         f.close()
 
+    def keep_term(self,whole_list):
+        l = []
+        for element in whole_list:
+            if element[2] == "TERM":
+                s = " ".join(element)
+                l.append(s)
+            else:
+                pass
+        return l
+
+    def term_rewrite(self,s):
+        name="termlist.txt"
+        f=open(name,"w",encoding = "utf-16")
+        f.write(s)
+        f.close()
+
     def main(self):
         f=self.file()
         x=f.read()
         l=self.combine(x)
+        t_l = self.keep_term(l)
+        t=" ".join(t_l)
+        self.term_rewrite(t)
         f_l=self.rewrite_l(l)
         s_l=self.sentence_list(f_l)
         s=" ".join(s_l)
         self.rewrite(s)
         w = rewrite_wordlist()
         w.main()
+
 
 p = rewrite_term_prob()
 p.main()

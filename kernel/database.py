@@ -1,13 +1,3 @@
-#-------------------------------------------------------------------------------
-# Name:        婵☆垪鈧櫕鍋?
-# Purpose:
-#
-# Author:      Administrator
-#
-# Created:     07/12/2015
-# Copyright:   (c) Administrator 2015
-# Licence:     <your licence>
-#-------------------------------------------------------------------------------
 
 
 def file_word():
@@ -23,39 +13,44 @@ def file_cha():
     return f
 
 def split_into_list(f):
-    '''
-    We split the lexicon into lots of lists.
-    '''
+    """
+    This function will split the lexicon into lots of lists.
+    """
     s = f.read()
     l = s.split()
     return l
 
 def combine(l):
-    '''
-    We combine the elements of the same word into a list in the form of name, probability and properties.
-    '''
+    """
+    This function will combine the elements of the same word into a list in the
+    form of name, probability and properties.
+    """
     c = -1
     wd_l = []
     for m in l:
-        if ord(m[0]) >= 128:  # If a Chinese character is detected, it will be appended into a new element, followed by its probability and properties.
+        if ord(m[0]) >= 128:
+            # If a Chinese character is detected, it will be appended into a
+            # new element, followed by its probability and properties.
             c += 1
             wd_l += [[]]
         wd_l[c].append(m)
     return wd_l
 
 def relist(l):
-    '''
-    This function will relist the words' name, probability and properties into three separate lists.
-    '''
+    """
+    This function will rearrange the words' name, probability and properties
+    into three separate lists.
+    """
     wd = [x[0] for x in l]
     pb = [x[1] for x in l]
     pro = [x[2:] for x in l]
     return wd,pb,pro
 
 def combine_cha(l):
-    '''
-    We combine the elements of the same character into a list in the form of name and probability.
-    '''
+    """
+    This function will combine the elements of the same character into a list
+    in the form of name and probability.
+    """
     wd=[]
     prob=[]
     for i in range(len(l)):
@@ -66,16 +61,25 @@ def combine_cha(l):
     return wd,prob
 
 def dictionary(a,b):
-    '''
-    This function will make a dictionary of the words.
-    '''
+    """
+    This function will make a dictionary for two lists.
+    """
     dic=dict(zip(a,b))
     return dic
 
 def solve_word():
-    '''
-    It's the process of creating a word dictionary.
-    '''
+    """
+    This is the main structure of constructing the database of the words.
+
+    Each word in the word file is made up of two characters.
+
+    First, read the word file and split the content into lists.
+    Then, combine the related lists of the same word into one list, and thus the
+    whole list consists of many elements which represents a particular word.
+    After that, rearrange the list so that three lists are created, including
+    the word list, the probability list and the property list.
+    Finally make the dictionary of the words and their probabilities.
+    """
     f_wd = file_word()
     l = split_into_list(f_wd)
     wd_l = combine(l)
@@ -86,7 +90,16 @@ def solve_word():
 
 def solve_term():
     """
-    It's the process of creating a TERM dictionary.
+    This is the main structure of constructing the database of the terms.
+
+    "TERM" includes idioms, names of famous people and some fixed collocations.
+
+    First, read the termword file and split the content into lists.
+    Then, combine the related lists of the same word into one list, and thus the
+    whole list consists of many elements which represents a particular word.
+    After that, rearrange the list so that three lists are created, including
+    the word list, the probability list and the property list.
+    Finally make the dictionary of the words and their probabilities.
     """
     f_wd = file_termword()
     l = split_into_list(f_wd)

@@ -1,6 +1,6 @@
 
 import math
-from . import database, calculate
+import database, calculate
 
 dic_pb,dic_cha,dic_term = database.database_main()
 """
@@ -10,7 +10,7 @@ dic_pb,dic_cha,dic_term = database.database_main()
 """
 
 
-class mi:
+class Mi:
     """Mutual information of two Chinese character"""
     def __init__(self):
         """
@@ -25,7 +25,7 @@ class mi:
         self.number_string = ""
         self.number_separate_string = ""
         self.punctuation_string = ""
-        
+
     def get_number_standard(self):
         file = open("number_file.txt", "r", encoding="utf-16")
         self.number_string = file.read()
