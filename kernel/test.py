@@ -18,7 +18,7 @@ def record_time(method):
 
 
 @record_time
-def test(amount=20):
+def test(start=0, amount=-1):
     """
     Do test according to test.txt and answer.txt
     :param amount:denote how many lines of tests you'd like to do,if -1,do every test.
@@ -33,25 +33,26 @@ def test(amount=20):
     c = 0  # Words split correctly
     e = 0  # Words split wrong
 
+    for i in range(start):
+        src_file.readline()
+        ans_file.readline()
+
     for line in src_file:
         test_cnt += 1
         if test_cnt > amount != -1:  # amount = -1 means do every test
             break
-
-        ans = ans_file.readline()
+        ans = ans_file.readline().strip()
         ans = re.sub(r'\s+', SPLIT, ans)
         # Since answer.txt use double whitespace as split,first convert it to our split '|'
-
-        ret = seg.word_segment(line)
-
+        ret = seg.word_segment(line.strip())
         dN, dc, de = diff(ret, ans)
         N += dN
         c += dc
         e += de
         if de == 0:
-            print('Sentence #%d passed!' % test_cnt)
+            print('Sentence #%d passed!' % (test_cnt+start))
         else:
-            print('Sentence #%d failed!' % test_cnt)
+            print('Sentence #%d failed!' % (test_cnt+start))
             print('Correct answer:')
             print(ans)
             print('Your answer:')
@@ -69,10 +70,10 @@ def test(amount=20):
     fm = 2 * p * r / (p + r)
     er = e / N
 
-    print('Recall:%.2f%%' % r*100)
-    print('Precision:%.2f%%' % p*100)
-    print('f-measure:%.2f' % fm)
-    print('Error Rate:%.2f%%' % er)
+    print('Recall:%.2f%%' % (r*100))
+    print('Precision:%.2f%%' % (p*100))
+    print('f-measure:%.2f%%' % (fm*100))
+    print('Error Rate:%.2f%%' % (er*100))
 
 
 # def convert_to_mark_list(string: str) -> list:
