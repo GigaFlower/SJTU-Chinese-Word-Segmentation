@@ -55,11 +55,11 @@ class Notepad:
     def make_shortcut_bar(self):
         self.shortcut_bar = Frame(self.root, height=25, bg='LightSeaGreen', width=800)
 
-        icons = ['new', 'open', 'save', 'cut', 'paste', 'redo', 'undo']
-
-        for ind, ico in enumerate(icons):
-            img = PhotoImage(file='icons/' + ico + '.gif')
-            cmd = eval('self.' + ico)
+        # icons = ['new', 'open', 'save', 'cut', 'paste', 'redo', 'undo']
+        #
+        # for ind, ico in enumerate(icons):
+        #     img = PhotoImage(file='icons/' + ico + '.gif')
+        #     cmd = eval('self.' + ico)
 
             # Buttons will not show any image until you tell them twice
             # b = Button(self.shortcut_bar, image=img, command=cmd)
