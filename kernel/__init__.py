@@ -60,6 +60,7 @@ class Segmentation:
                     substring = ""
                 else:
                     pass
+        string_complete.append(substring)
         return string_complete
 
     def word_segment(self, raw: str) -> str:
@@ -324,6 +325,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("中华人民共和国万岁万岁万万岁"))
+    print(s.word_segment("中华人民共和国斥资２．５亿打造航母。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
