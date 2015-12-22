@@ -81,15 +81,15 @@ class DemoView:
         """This function setting the properties of raw_text_pad,sen_text_pad and wrd_text_pad"""
         # setting raw_text_pad
         self.raw_text_pad = Text(self.root)
-        self.raw_text_pad.pack(side='left')
+        self.raw_text_pad.pack()
 
         # setting sen_text_pad
         self.sen_text_pad = Text(self.root)
-        self.sen_text_pad.pack(side='left')
+        self.sen_text_pad.pack()
 
         # setting wrd_text_pad
         self.wrd_text_pad = Text(self.root)
-        self.wrd_text_pad.pack(side='left')
+        self.wrd_text_pad.pack()
 
     # Menu functions
     # ----------------------------------------------------------
