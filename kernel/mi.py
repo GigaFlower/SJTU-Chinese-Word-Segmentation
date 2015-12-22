@@ -1,6 +1,8 @@
 
-import math
+import math, os
 from kernel import calculate
+
+PATH = os.path.join(os.getcwd(), 'kernel')
 
 
 class Mi:
@@ -27,16 +29,16 @@ class Mi:
         self.dic_term = {}
 
     def get_number_standard(self):
-        file = open("number_file.txt", "r", encoding="utf-16")
+        file = open(os.path.join(PATH, "number_file.txt"), "r", encoding="utf-16")
         self.number_string = file.read()
         file.close()
 
     def get_number_separate(self):
-        file = open("number_separate_file.txt" , "r" , encoding = "utf-16")
+        file = open(os.path.join(PATH, "number_separate_file.txt") , "r" , encoding = "utf-16")
         self.number_separate_string = file.read()
 
     def get_punc_standard(self):
-        file = open("punctuation_file_in_prob.txt", "r", encoding="utf-16")
+        file = open(os.path.join(PATH, "punctuation_file_in_prob.txt"), "r", encoding="utf-16")
         self.punctuation_string = file.read()
         file.close()
 

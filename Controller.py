@@ -1,5 +1,4 @@
 """Code responsible for application logic"""
-import tkinter as tk
 
 import View
 import kernel
@@ -8,13 +7,12 @@ import kernel
 class MainController:
     """The main controller of app activity"""
     def __init__(self):
-        self.root = tk.Tk()
         self.view = View.DemoView()
         self.view.register(self)
         self.model = kernel.Segmentation()
 
     def run(self):
-        self.root.mainloop()
+        self.view.run()
 
     @staticmethod
     def read_file(filename: str) -> str:
@@ -50,7 +48,7 @@ class MainController:
         Examples:
         >>> c = MainController()
         >>> c.sentence_segment("你好，再见。")
-        ["你好，","再见。"]
+        ['你好，', '再见。']
 
         QUESTIONS:
         1.Does the list contain punctuation at the end of each sentence?
@@ -68,8 +66,8 @@ class MainController:
 
         Examples:
         >>> c = MainController()
-        >>> c.word_segment("我喜欢踢足球")
-        "我｜喜欢｜踢|足球"
+        >>> c.word_segment("我喜欢足球")
+        "我｜喜欢|足球"
 
         QUESTIONS:
         1.What should be the separator character?
