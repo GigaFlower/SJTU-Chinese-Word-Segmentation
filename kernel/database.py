@@ -1,3 +1,6 @@
+import os
+
+PATH = os.path.join(os.getcwd(), 'kernel')
 
 class Data:
     def __init__(self):
@@ -8,9 +11,9 @@ class Data:
         "file_term" represents the term lexicon file.
         "file_character" represents the character lexicon file.
         """
-        self.file_word = open("wordlist_v2.txt","r", encoding = "utf-16")
-        self.file_term = open("termlist.txt","r", encoding = "utf-16")
-        self.file_character = open("characterlist.txt","r",encoding = "utf-16")
+        self.file_word = open(os.path.join(PATH, "wordlist_v2.txt"), "r", encoding="utf-16")
+        self.file_term = open(os.path.join(PATH, "termlist.txt"), "r", encoding="utf-16")
+        self.file_character = open(os.path.join(PATH, "characterlist.txt"), "r", encoding="utf-16")
 
     def split_into_list(self, file):
         """

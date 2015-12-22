@@ -4,9 +4,11 @@ Code responsible for service logic
 """
 
 import time
+import os
 from kernel import database, dts_calculate, mi, judge, term_segmentation
 
 SPLIT = '|'
+PATH = os.path.join(os.getcwd(), 'kernel')
 
 
 class Segmentation:
@@ -18,7 +20,7 @@ class Segmentation:
         # Initialize rules
         self.rules = Rule()
 
-        self.sen_punc_stan = open("punctuation_standard_file.txt", "r",
+        self.sen_punc_stan = open(os.path.join(PATH, "punctuation_standard_file.txt"), "r",
                              encoding="utf-16").read()
         # "sen_punc_stan" are sentence segment punctuations.
         self.d = database.Data()
@@ -173,9 +175,9 @@ class Lexicon:
         # src = open(filename, "r").read()
         # self.lex = src.split()
 
-        self.file_word = open("wordlist.txt", "r", encoding="utf-16")
-        self.final_word_file = open("wordlist_v2.txt", "r", encoding="utf-16")
-        self.term_file = open("termlist.txt", "r", encoding="utf-16")
+        self.file_word = open(os.path.join(PATH, "wordlist.txt"), "r", encoding="utf-16")
+        self.final_word_file = open(os.path.join(PATH, "wordlist_v2.txt"), "r", encoding="utf-16")
+        self.term_file = open(os.path.join(PATH, "termlist.txt"), "r", encoding="utf-16")
         self.word_list = []
         self.term_list = []
         self.sentence_list = []
@@ -289,7 +291,7 @@ class Lexicon:
 
         self.keep_term()
         term_sentence = " ".join(self.term_list)
-        self.term_file = open("termlist.txt", "w", encoding="utf-16")
+        self.term_file = open(os.path.join(PATH, "termlist.txt"), "w", encoding="utf-16")
         self.term_file.write(term_sentence)
         self.term_file.close()
 
@@ -307,7 +309,7 @@ class Lexicon:
         self.sentence_join()
         sentence = " ".join(self.sentence_list)
 
-        self.final_word_file = open("wordlist_v2.txt", "w", encoding="utf-16")
+        self.final_word_file = open(os.path.join(PATH, "wordlist_v2.txt"), "w", encoding="utf-16")
         self.final_word_file.write(sentence)
         self.final_word_file.close()
 
