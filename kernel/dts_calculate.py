@@ -1,6 +1,6 @@
 
-import calculate
 import math
+from kernel import calculate
 
 
 class Dts:

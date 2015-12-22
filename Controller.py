@@ -1,7 +1,7 @@
 """Code responsible for application logic"""
 import tkinter as tk
-from View import DemoView
 
+import View
 import kernel
 
 
@@ -9,7 +9,7 @@ class MainController:
     """The main controller of app activity"""
     def __init__(self):
         self.root = tk.Tk()
-        self.view = DemoView(self.root)
+        self.view = View.DemoView()
         self.view.register(self)
         self.model = kernel.Segmentation()
 

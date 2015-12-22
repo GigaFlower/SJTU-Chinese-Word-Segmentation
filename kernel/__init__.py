@@ -4,7 +4,7 @@ Code responsible for service logic
 """
 
 import time
-import database, dts_calculate, mi, judge, term_segmentation
+from kernel import database, dts_calculate, mi, judge, term_segmentation
 
 
 class Segmentation:

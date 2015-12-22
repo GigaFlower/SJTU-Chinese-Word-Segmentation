@@ -1,6 +1,6 @@
 
 import math
-import calculate
+from kernel import calculate
 
 
 class Mi:
