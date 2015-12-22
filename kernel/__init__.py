@@ -9,9 +9,11 @@ import database, dts_calculate, mi, judge, term_segmentation
 
 class Segmentation:
     """This class handles all staff relating to segmentation"""
+    SPLIT = '|'
+
     def __init__(self):
         # Initialize lexicon
-        self.lex = Lexicon("lexicon.txt")
+        self.lex = Lexicon()
 
         # Initialize rules
         self.rules = Rule()
@@ -34,6 +36,11 @@ class Segmentation:
         The punctuations are reserved, but there exists a special case that "\n"
         should be deleted.
         The completed sentences will be put in the list "s_complete".
+
+        Example:
+        >>> s = Segmentation()
+        >>> s.sentence_segment("一，二三！四五，六七八。")
+        ['一，', '二三！', '四五，', '六七八。']
         """
         substring = ""
         string_complete = []
@@ -73,32 +80,37 @@ class Segmentation:
         # which will be used as an auxiliary in the calculation of mi and dtscore.
 
         self.set_class_property_dic(self.dts)
-        dts_mean , dts_standard_derivation , string_with_dtscore_list = self.dts.dts_calculate_main(string)
+        dts_mean, dts_standard_derivation, string_with_dtscore_list = self.dts.dts_calculate_main(string)
 
         self.set_class_property_dic(self.m)
-        mi_mean , mi_standard_derivation , string_with_mi_list = self.m.mi_main(string)
+        mi_mean, mi_standard_derivation, string_with_mi_list = self.m.mi_main(string)
 
-        self.set_judge_property(dts_mean,dts_standard_derivation,
-                                string_with_dtscore_list ,
-                                mi_mean,mi_standard_derivation ,
-                                string_with_mi_list , mark_list)
+        self.set_judge_property(dts_mean, dts_standard_derivation,
+                                string_with_dtscore_list,
+                                mi_mean, mi_standard_derivation,
+                                string_with_mi_list, mark_list)
         mark_list = self.j.get_mark_list()
 
-        subs = self.combine(mark_list , raw)
+        subs = self.combine(mark_list, raw)
         return subs
 
-    def combine(self,mark_list,string):
+    def combine(self, mark_list, string):
         """
         This function will combine the characters again according to the
         "mark_list". When it comes to "separated", the adjacent characters tend
         to separate and the separate mark will be added.
         In other cases, they tend to be bound.
+
+        Example:
+        >>> s = Segmentation()
+        >>> s.combine(['separated','bound','separated','separated','bound'],'abcdef')
+        'a|bc|d|ef'
         """
         length = len(string)
         subs = string[0]
         for num in range(length-1):
             if mark_list[num] == "separated":
-                add = "|" + string[num + 1]
+                add = self.SPLIT + string[num + 1]
                 subs += add
             else:
                 subs += string[num + 1]
@@ -119,8 +131,8 @@ class Segmentation:
         instance.dic_cha = self.dic_cha
         instance.dic_term = self.dic_term
 
-    def set_judge_property(self,dts_mean,dts_st_der,string_dts_list,mi_mean,
-                            mi_st_der,string_mi_list,mark_list):
+    def set_judge_property(self, dts_mean, dts_st_der, string_dts_list, mi_mean,
+                            mi_st_der, string_mi_list, mark_list):
         """
         This function will be used to set the properties of the class "judge" in
         judge.py.
@@ -140,9 +152,10 @@ class Segmentation:
 
         self.j.mark_list = mark_list
 
+
 class Lexicon:
     """This class represents a lexicon library"""
-    def __init__(self, filename):
+    def __init__(self):
         """
         Load a lexicon from a txt file.
 
@@ -157,12 +170,12 @@ class Lexicon:
         "dic_pb" is the dictionary, i.e., the word lexicon.
         """
         self.lex = []
-        #src = open(filename, "r").read()
-        #self.lex = src.split()
+        # src = open(filename, "r").read()
+        # self.lex = src.split()
 
-        self.file_word = open("wordlist.txt" , "r" , encoding = "utf-16")
-        self.final_word_file = open("wordlist_v2.txt" , "r" , encoding = "utf-16")
-        self.term_file = open("termlist.txt" , "r" , encoding = "utf-16")
+        self.file_word = open("wordlist.txt", "r", encoding="utf-16")
+        self.final_word_file = open("wordlist_v2.txt", "r", encoding="utf-16")
+        self.term_file = open("termlist.txt", "r", encoding="utf-16")
         self.word_list = []
         self.term_list = []
         self.sentence_list = []
@@ -189,7 +202,7 @@ class Lexicon:
                 self.word_list += [[]]
             self.word_list[counter].append(element)
 
-    def add_probability(self,problist):
+    def add_probability(self, problist):
         """
         This function will cut the words with more than 2 characters
         into several 2-long words.
@@ -276,13 +289,13 @@ class Lexicon:
 
         self.keep_term()
         term_sentence = " ".join(self.term_list)
-        self.term_file = open("termlist.txt" , "w" , encoding = "utf-16")
+        self.term_file = open("termlist.txt", "w", encoding="utf-16")
         self.term_file.write(term_sentence)
         self.term_file.close()
 
         self.rewrite_word_prob()
         wd, pb = self.relist(self.word_list)
-        word_with_pb_list = zip(wd,pb)
+        word_with_pb_list = zip(wd, pb)
         self.dic_pb = dict(word_with_pb_list)
         self.word_list = [list(item) for item in self.dic_pb.items()]
         # This word_list is used as a comparing probability list, where words
@@ -294,20 +307,21 @@ class Lexicon:
         self.sentence_join()
         sentence = " ".join(self.sentence_list)
 
-        self.final_word_file = open("wordlist_v2.txt" , "w" , encoding = "utf-16")
+        self.final_word_file = open("wordlist_v2.txt", "w", encoding="utf-16")
         self.final_word_file.write(sentence)
         self.final_word_file.close()
+
 
 class Rule:
     """This class represents a rule library"""
     pass
 
-l=Lexicon("sd")
-l.rewrite_lexicon()
+if __name__ == '__main__':
+    l = Lexicon()
+    l.rewrite_lexicon()
 
-a=time.time()
-s=Segmentation()
-print(s.word_segment("中华人民共和国万岁万岁万万岁"))
-b=time.time()
-print(b-a)
-
+    a = time.time()
+    s = Segmentation()
+    print(s.word_segment("中华人民共和国万岁万岁万万岁"))
+    b = time.time()
+    print("Time consumed: %.2fs" % (b-a))
