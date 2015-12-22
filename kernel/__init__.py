@@ -8,7 +8,7 @@ import os
 from kernel import database, dts_calculate, mi, judge, term_segmentation
 
 SPLIT = '|'
-PATH = os.path.join(os.getcwd(), 'kernel')
+PATH = os.path.split(os.path.realpath(__file__))[0]
 
 
 class Segmentation:

@@ -2,7 +2,7 @@
 import math, os
 from kernel import calculate
 
-PATH = os.path.join(os.getcwd(), 'kernel')
+PATH = os.path.split(os.path.realpath(__file__))[0]
 
 class Dts:
     """Delta t-score of two Chinese character"""

@@ -1,6 +1,6 @@
 import os
 
-PATH = os.path.join(os.getcwd(), 'kernel')
+PATH = os.path.split(os.path.realpath(__file__))[0]
 
 class Data:
     def __init__(self):
