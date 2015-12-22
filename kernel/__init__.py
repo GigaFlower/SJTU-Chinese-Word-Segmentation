@@ -6,11 +6,11 @@ Code responsible for service logic
 import time
 from kernel import database, dts_calculate, mi, judge, term_segmentation
 
+SPLIT = '|'
+
 
 class Segmentation:
     """This class handles all staff relating to segmentation"""
-    SPLIT = '|'
-
     def __init__(self):
         # Initialize lexicon
         self.lex = Lexicon()
@@ -110,7 +110,7 @@ class Segmentation:
         subs = string[0]
         for num in range(length-1):
             if mark_list[num] == "separated":
-                add = self.SPLIT + string[num + 1]
+                add = SPLIT + string[num + 1]
                 subs += add
             else:
                 subs += string[num + 1]
@@ -213,8 +213,8 @@ class Lexicon:
                 self.dic_pb.pop(element[0])
                 # Remove the certain word with more than 2 characters from
                 # the dictionary.
-                for num in range( len(element[0]) - 1 ):
-                    cut_element = element[0][num : num + 2]
+                for num in range(len(element[0]) - 1):
+                    cut_element = element[0][num: num + 2]
                     if cut_element in self.dic_pb:
                         self.dic_pb[cut_element] += element[1]
                     else:
