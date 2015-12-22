@@ -48,13 +48,14 @@ class MainController:
         Examples:
         >>> c = MainController()
         >>> c.sentence_segment("你好，再见。")
-        ['你好，', '再见。']
+        '你好，\n再见。'
 
         QUESTIONS:
         1.Does the list contain punctuation at the end of each sentence?
         2.Can it recognize both Chinese and English punctuations?
         """
-        return self.model.sentence_segment(raw)
+        sen_list = self.model.sentence_segment(raw)
+        return "\n".join(sen_list)
 
     def word_segment(self, sentence: str) -> str:
         """
@@ -67,7 +68,7 @@ class MainController:
         Examples:
         >>> c = MainController()
         >>> c.word_segment("我喜欢足球")
-        "我｜喜欢|足球"
+        '我|喜欢|足球'
 
         QUESTIONS:
         1.What should be the separator character?
