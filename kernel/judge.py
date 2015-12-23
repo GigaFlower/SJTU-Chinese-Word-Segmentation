@@ -352,18 +352,24 @@ class Judge:
         If the current element is the second local extremum, compare its
         distance with its lrmin value.
         """
-        if self.judge_left_second_local_max(ind) or self.judge_left_second_local_min(ind):
-            lrmin = self.calculate_left_lrmin(ind)
-            dis = self.calculate_distance_left_local_ext(ind)
-            if dis < 0.5 * lrmin:
-                return "right"
-            else:
-                return "?"
-        elif self.judge_right_second_local_max(ind) or self.judge_right_second_local_min(ind):
+        if self.judge_right_second_local_max(ind) or self.judge_right_second_local_min(ind):
             lrmin = self.calculate_right_lrmin(ind)
             dis = self.calculate_distance_right_local_ext(ind)
             if dis < 0.5 * lrmin:
                 return "left"
+            else:
+                if self.judge_left_second_local_max(ind) or self.judge_left_second_local_min(ind):
+                    lrmin = self.calculate_left_lrmin(ind)
+                    dis = self.calculate_distance_left_local_ext(ind)
+                    if dis < 0.5 * lrmin:
+                        return "right"
+                    else:
+                        return "?"
+        elif self.judge_left_second_local_max(ind) or self.judge_left_second_local_min(ind):
+            lrmin = self.calculate_left_lrmin(ind)
+            dis = self.calculate_distance_left_local_ext(ind)
+            if dis < 0.5 * lrmin:
+                return "right"
             else:
                 return "?"
         else:

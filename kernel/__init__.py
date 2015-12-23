@@ -5,7 +5,7 @@ Code responsible for service logic
 
 import time
 import os
-from kernel import database, dts_calculate, mi, judge, term_segmentation
+from kernel import database, dts_calculate, mi, judge, term_segmentation, special_mark_segmentation
 
 SPLIT = '|'
 PATH = os.path.split(os.path.realpath(__file__))[0]
@@ -21,12 +21,16 @@ class Segmentation:
         self.rules = Rule()
 
         self.sen_punc_stan = open(os.path.join(PATH, "punctuation_standard_file.txt"), "r",
-                             encoding="utf-16").read()
-        # "sen_punc_stan" are sentence segment punctuations.
+                             encoding="utf-16")
+        # "sen_punc_stan" contains sentence segment punctuations.
+        self.punc = open(os.path.join(PATH, "punctuation_file_in_prob.txt"), "r", encoding="utf-16")
+        # "punc" contains punctuations.
+
         self.d = database.Data()
         self.dic_pb, self.dic_cha, self.dic_term = self.d.get_dictionary()
 
         self.t = term_segmentation.Term_seg()
+        self.sp = special_mark_segmentation.Special_mark_seg()
         self.dts = dts_calculate.Dts()
         self.m = mi.Mi()
         self.j = judge.Judge()
@@ -46,6 +50,7 @@ class Segmentation:
         """
         substring = ""
         string_complete = []
+        punc_stan = self.sen_punc_stan.read()
         for cha in raw:
             if cha == "\n":
                 string_complete.append(substring)
@@ -53,7 +58,7 @@ class Segmentation:
                 substring = ""
             else:
                 substring += cha
-                if cha in self.sen_punc_stan:
+                if cha in punc_stan:
                     string_complete.append(substring)
                     # If the sentence segment punctuations("\n" is excluded) are
                     # detected, the sentence should be cut here.
@@ -61,6 +66,7 @@ class Segmentation:
                 else:
                     pass
         string_complete.append(substring)
+        self.sen_punc_stan.close()
         return string_complete
 
     def word_segment(self, raw: str) -> str:
@@ -78,7 +84,11 @@ class Segmentation:
         self.set_class_property_dic(self.t)
         string_aft_termseg, mark_list = self.t.retrieve(raw)
 
-        string = " " + string_aft_termseg + " "
+        self.sp.mark_list = mark_list
+        mark_list = self.sp.retrieve(string_aft_termseg)
+
+        string_aft_sep_punc, mark_list = self.separate_punc(string_aft_termseg, mark_list)
+        string = " " + string_aft_sep_punc + " "
         # Add " " in front of  the first character and behind the last character,
         # which will be used as an auxiliary in the calculation of mi and dtscore.
 
@@ -111,13 +121,53 @@ class Segmentation:
         """
         length = len(string)
         subs = string[0]
-        for num in range(length-1):
-            if mark_list[num] == "separated":
+        for num in range(length - 1):
+            if mark_list[num] == "separated" or ( mark_list[num] == "right" and mark_list[num + 1] != "" ):
                 add = SPLIT + string[num + 1]
                 subs += add
             else:
                 subs += string[num + 1]
         return subs
+
+    def separate_punc(self, string, mark_list):
+        """
+        This function recognizes the punctuations and separate them by setting
+        their relationships with their neighbors in mark_list as "separated".
+        Then they are replaced by blanks.
+        """
+        punc = self.punc.read()
+        subs = ""
+        length = len(string)
+        for num in range(length):
+            if string[num] not in punc:
+                subs += string[num]
+            else:
+                subs += " "
+                # If the relationship of the punctuations with their neighbors
+                # are not set before, label their relationships with "separated".
+                if num == 0 and mark_list[num] == 0:
+                    # If it is the first character, only separate it with its
+                    # right neighbor.
+                    mark_list[num] = "separated"
+                elif num == length - 1 and mark_list[num - 1] == 0:
+                    # If it is the last character, only separate it with its
+                    # left neighbor.
+                    mark_list[num - 1] = "separated"
+                elif 0 < num < length - 1:
+                    # If it is the middle character, separate it with its both
+                    # neighbors.
+                    if mark_list[num - 1] == 0:
+                        mark_list[num - 1] = "separated"
+                    else:
+                        pass
+                    if mark_list[num] == 0:
+                        mark_list[num] = "separated"
+                    else:
+                        pass
+                else:
+                    pass
+        self.punc.close()
+        return subs, mark_list
 
     def set_class_property_dic(self, instance):
         """
@@ -173,8 +223,8 @@ class Lexicon:
         "dic_pb" is the dictionary, i.e., the word lexicon.
         """
         self.lex = []
-        # src = open(filename, "r").read()
-        # self.lex = src.split()
+        ## src = open(filename, "r").read()
+        ## self.lex = src.split()
 
         self.file_word = open(os.path.join(PATH, "wordlist.txt"), "r", encoding="utf-16")
         self.final_word_file = open(os.path.join(PATH, "wordlist_v2.txt"), "r", encoding="utf-16")
@@ -237,8 +287,6 @@ class Lexicon:
                 new_list.append([element[0] , int(element[1])])
             else:
                 pass
-        #word = [element[0] for element in word_list]
-        #probability = [int(element[1]) for element in word_list]
         return new_list
 
     def keep_term(self):
@@ -298,7 +346,7 @@ class Lexicon:
 
         self.keep_term()
         term_sentence = " ".join(self.term_list)
-        self.term_file = open(os.path.join(PATH, "termlist.txt"), "w", encoding="utf-16")
+        self.term_file = open(os.path.join(PATH, "termlist.txt"), "w+", encoding="utf-16")
         self.term_file.write(term_sentence)
         self.term_file.close()
 
@@ -309,13 +357,13 @@ class Lexicon:
         # This word_list is used as a comparing probability list, where words
         # with more than 2 characters are obtained.
         self.add_probability(self.word_list)
-        self.word_list = [list(item) for item in self.dic_pb.items()]
+        self.word_list = [list(item) for item in sorted(self.dic_pb.items())]
         # This word_list is used as a lexicon list, which only has 2-long words.
 
         self.sentence_join()
         sentence = " ".join(self.sentence_list)
 
-        self.final_word_file = open(os.path.join(PATH, "wordlist_v2.txt"), "w", encoding="utf-16")
+        self.final_word_file = open(os.path.join(PATH, "wordlist_v2.txt"), "w+", encoding="utf-16")
         self.final_word_file.write(sentence)
         self.final_word_file.close()
 
@@ -325,11 +373,11 @@ class Rule:
     pass
 
 if __name__ == '__main__':
-    l = Lexicon()
-    l.rewrite_lexicon()
+    ##l = Lexicon()
+    ##l.rewrite_lexicon()
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("凯尔特水中的空气含量很高"))
+    print(s.word_segment("我很喜欢《三体》这一本书，写的实在是太好了。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))

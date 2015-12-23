@@ -42,15 +42,15 @@ class Term_seg:
         to 3, and judge whether the certain word is a TERM.
         """
         length = len(string)
-        self.mark_list = [0] * length
+        self.mark_list = [0] * (length - 1 )
         if length >= 13:
-            for num in range(13,2,-1):
+            for num in range(13,1,-1):
                 for counter in range(0,length - num - 1):
                     self.term_segmentation(counter, num ,string)
         else:
             # If the length of the string is less than 13, retrieve from the
             # length number to 3.
-            for num in range(length,2,-1):
+            for num in range(length,1,-1):
                 for counter in range(0,length - num + 1):
                     self.term_segmentation(counter, num ,string)
         return string, self.mark_list
