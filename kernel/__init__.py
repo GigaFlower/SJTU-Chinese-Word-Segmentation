@@ -320,8 +320,6 @@ class Rule:
     pass
 
 if __name__ == '__main__':
-    l = Lexicon()
-    l.rewrite_lexicon()
 
     a = time.time()
     s = Segmentation()
