@@ -231,9 +231,15 @@ class Lexicon:
         This function will relist the words' names and probabilities into two
         separate lists.
         """
-        word = [element[0] for element in word_list]
-        probability = [int(element[1]) for element in word_list]
-        return word, probability
+        new_list = []
+        for element in word_list:
+            if element[2] != "TERM":
+                new_list.append([element[0] , int(element[1])])
+            else:
+                pass
+        #word = [element[0] for element in word_list]
+        #probability = [int(element[1]) for element in word_list]
+        return new_list
 
     def keep_term(self):
         """
@@ -297,8 +303,7 @@ class Lexicon:
         self.term_file.close()
 
         self.rewrite_word_prob()
-        wd, pb = self.relist(self.word_list)
-        word_with_pb_list = zip(wd, pb)
+        word_with_pb_list = self.relist(self.word_list)
         self.dic_pb = dict(word_with_pb_list)
         self.word_list = [list(item) for item in self.dic_pb.items()]
         # This word_list is used as a comparing probability list, where words
@@ -320,9 +325,11 @@ class Rule:
     pass
 
 if __name__ == '__main__':
+    l = Lexicon()
+    l.rewrite_lexicon()
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("中华人民共和国斥资２．５亿打造航母。"))
+    print(s.word_segment("凯尔特水中的空气含量很高"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
