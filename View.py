@@ -1,18 +1,31 @@
 """Code responsible for GUI interface"""
 from tkinter import *
 from tkinter import messagebox
+from tkinter import filedialog
+import tkinter.ttk as ttk
 
 
 class DemoView:
-    def __init__(self):
+    def __init__(self, controller):
+        self.controller = controller
         # Root window
         self.root = Tk()
         self.root.title("Y")
 
         # Three main text pads
+        # Only remind coder that there exist these properties
+        # Actual initialization is done in self.make_XXX()
         self.raw_text_pad = Text()
         self.sen_text_pad = Text()
         self.wrd_text_pad = Text()
+
+        self.setting_window = ttk.Notebook()
+        self.setting_tabs = ttk.Notebook()
+        self.lexi_pad = Text()
+        self.rule_pad = Text()
+
+        self.setting_window_on = False
+        self.rule_booleans = {}
 
         self.set_text_pad()
         self.make_menu()
@@ -49,12 +62,13 @@ class DemoView:
         segment_menu = Menu(main_menu)
         segment_menu.add_command(label="Sentence Segment", command=self.sentence_segment)
         segment_menu.add_command(label="Word Segment", command=self.word_segment)
-        segment_menu.add_command(label="File to file")
+        segment_menu.add_command(label="Segment all", command=self.segment_all)
+        segment_menu.add_command(label="File to file", command=self.file_to_file)
 
         # data_menu
         data_menu = Menu(main_menu)
-        data_menu.add_command(label="Lexicon", command=self.load_lexicon)
-        data_menu.add_command(label="Rule", command=self.load_rule)
+        data_menu.add_command(label="Lexicon", command=self.show_lexicon_pane)
+        data_menu.add_command(label="Rule", command=self.show_rule_pane)
 
         # help_menu
         help_menu = Menu(main_menu)
@@ -83,6 +97,45 @@ class DemoView:
         # setting wrd_text_pad
         self.wrd_text_pad = Text(self.root)
         self.wrd_text_pad.pack()
+
+    def make_setting_pad(self, tab=0):
+        """Make setting_pad which is to be trigger from clicking at 'Lexicon' or 'Rule' in menu"""
+        self.setting_window = Toplevel()
+        self.setting_window.minsize(400, 200)
+        self.setting_window.resizable = False
+
+        # Override window delete function
+        def delete_setting_window():
+            self.setting_window_on = False
+            self.setting_window.destroy()
+        self.setting_window.protocol('WM_DELETE_WINDOW', delete_setting_window)
+
+        # Make notebook
+        self.setting_tabs = ttk.Notebook(self.setting_window)
+
+        # Make lexicon_tab
+        lexicon_tab = Frame(self.setting_tabs)
+        self.lexi_pad = Listbox(lexicon_tab)
+        self.lexi_pad.pack(side=LEFT)
+
+        Button(lexicon_tab, text='Load', width=7, command=self.load_lexicon).pack(expand=True)
+        Button(lexicon_tab, text='Add', width=7, command=self.add_lexicon).pack(expand=True)
+        Button(lexicon_tab, text='Search', width=7, command=self.search_lexicon).pack(expand=True)
+
+        Button(lexicon_tab, text='Delete', width=7, command=self.delete_lexicon).pack(expand=True)
+        Button(lexicon_tab, text='Modify', width=7, command=self.modify_lexicon).pack(expand=True, padx=5)
+
+        # Make rule_tab
+        rule_tab = Frame(self.setting_tabs)
+        self.rule_pad = Frame(rule_tab)
+        self.load_rule()
+        self.rule_pad.pack()
+
+        #
+        self.setting_tabs.add(lexicon_tab, text="Lexicon")
+        self.setting_tabs.add(rule_tab, text="Rule")
+        self.setting_tabs.select(tab)
+        self.setting_tabs.pack(expand=True, fill=BOTH)
 
     # Menu functions
     # ----------------------------------------------------------
@@ -113,14 +166,23 @@ class DemoView:
         pass
 
     # Segment menu
-    def sentence_segment(self):
+    def segment_all(self):
         """
         If sentence segmentation has not yet been done,
         apply sentence segmentation and apply word segmentation to all sentences.
-        If sentence segmentation has already been done
+        If sentence segmentation has already been done,
         apply word segmentation to sentences selected.
         If no sentence is selected, regard as all sentences have been selected
         """
+        if not self.has_raw:
+            messagebox.showerror("An error occurs", "There is no text to be segmented!")
+        elif not self.has_sen:
+            self.sentence_segment()
+            # FIXME: Should be all sentences but this function is unavailable yet
+        else:
+            self.sentence_segment()
+
+    def sentence_segment(self):
         raw = self.raw_text_pad.get('1.0', 'end')
         raw = raw.strip()
         if raw:
@@ -140,14 +202,67 @@ class DemoView:
         else:
             messagebox.showwarning("An error occurs", "There is no sentence to be segmented!")
 
-    def file_to_file(self):
-        pass
+    def file_to_file(self, first_in=True, src=None, des=None):
+        """
+        This function opens a file and directly export the result of word segmentation to another file
+        Note:
+        This function will call itself once with a minor delay to display 'Cutting' information
+        in case users would think the app break down.
+        All three paras work for this and by no means should caller give any para
+        """
+        src_file = src if src else filedialog.askopenfile()
+        des_file = des if des else filedialog.asksaveasfile()
+
+        if first_in:
+            self.root.title("Cutting, wait a second...")
+            self.root.after(200, lambda: self.file_to_file(False, src_file, des_file))
+        else:
+            des_file.write(self._wrd_seg(src_file.read()))
+            self.root.title("Done")
+            src_file.close()
+            des_file.close()
 
     # Lexicon & Rule
+    def show_lexicon_pane(self):
+        if self.setting_window_on:
+            self.setting_tabs.select(0)
+            self.setting_window.focus_set()
+        else:
+            self.setting_window_on = True
+            self.make_setting_pad(tab=0)
+
+    def show_rule_pane(self):
+        if self.setting_window_on:
+            self.setting_tabs.select(1)
+            self.setting_window.focus_set()
+        else:
+            self.setting_window_on = True
+            self.make_setting_pad(tab=1)
+
     def load_lexicon(self):
+        """Load lexicon and show in self.lex_pad"""
+        lex = self._get_lexicon()
+        for l in lex:
+            self.lexi_pad.insert(END, l)
+
+    def add_lexicon(self):
         pass
+    def search_lexicon(self):
+        pass
+    def delete_lexicon(self):
+        pass
+    def modify_lexicon(self):
+        pass
+
     def load_rule(self):
-        pass
+        """Load rules and add corresponding checkbutton to self.rule_pad"""
+        self.rule_booleans = {}
+        rul = self._get_rules()
+        for r in rul:
+            b = BooleanVar()
+            self.rule_booleans[r] = b
+            Checkbutton(self.rule_pad, text=r, variable=b).pack(expand=True, fill=BOTH)
+            # FIXME: I want to memorize users' setting instead of set all to 0!
 
     # Help & About
     def help(self):
@@ -155,19 +270,27 @@ class DemoView:
     def about(self):
         pass
 
-    # Following functions involves conversation with controller
-    # ----------------------------------------------------------
-    def register(self, controller):
-        """Make connection with controller"""
-        self.controller = controller
+    @property
+    def has_raw(self):
+        """This function is used to check whether any file has been loaded"""
+        return self.raw_text_pad.get('1.0', 'end').strip() != ""
 
-    def _sen_seg(self, raw):
+    @property
+    def has_sen(self):
+        """This function is used to check whether sentence segmentation has been made"""
+        return self.sen_text_pad.get('1.0', 'end').strip() != ""
+
+    # Following functions involves conversation with controller
+    # All interaction with controller are done below
+    # ----------------------------------------------------------
+    def _sen_seg(self, raw: str) -> str:
         return self.controller.sentence_segment(raw)
 
-    def _wrd_seg(self, raw):
+    def _wrd_seg(self, raw: str) -> str:
         return self.controller.word_segment(raw)
 
+    def _get_lexicon(self) -> list:
+        return self.controller.get_lexicon()
 
-if __name__ == '__main__':
-    t = DemoView()
-    t.run()
+    def _get_rules(self) -> list:
+        return self.controller.get_rule_description()

@@ -7,8 +7,7 @@ import kernel
 class MainController:
     """The main controller of app activity"""
     def __init__(self):
-        self.view = View.DemoView()
-        self.view.register(self)
+        self.view = View.DemoView(self)
         self.model = kernel.Segmentation()
 
     def run(self):
@@ -48,7 +47,7 @@ class MainController:
         Examples:
         >>> c = MainController()
         >>> c.sentence_segment("你好，再见。")
-        '你好，\n再见。'
+        '你好，\\n再见。\\n'
 
         QUESTIONS:
         1.Does the list contain punctuation at the end of each sentence?
@@ -75,7 +74,17 @@ class MainController:
         """
         return self.model.word_segment(sentence)
 
+    def get_lexicon(self) -> list:
+        """Get lexicon from self.kernel"""
+        return ["This", "function", "has not yet", "been implemented."]
 
+    def get_rule_description(self) -> list:
+        """Get rules from self.kernel"""
+        return ["Rule1", "Rule2", "Rule3", "Rule4"]
+
+    def set_rule_booleans(self):
+        """Tell self.kernel which rule need to be obeyed"""
+        pass
 
 if __name__ == '__main__':
     import doctest
