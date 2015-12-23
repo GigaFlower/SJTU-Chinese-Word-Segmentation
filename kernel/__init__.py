@@ -23,8 +23,6 @@ class Segmentation:
         self.sen_punc_stan = open(os.path.join(PATH, "punctuation_standard_file.txt"), "r",
                              encoding="utf-16")
         # "sen_punc_stan" contains sentence segment punctuations.
-        self.punc = open(os.path.join(PATH, "punctuation_file_in_prob.txt"), "r", encoding="utf-16")
-        # "punc" contains punctuations.
 
         self.d = database.Data()
         self.dic_pb, self.dic_cha, self.dic_term = self.d.get_dictionary()
@@ -135,7 +133,9 @@ class Segmentation:
         their relationships with their neighbors in mark_list as "separated".
         Then they are replaced by blanks.
         """
-        punc = self.punc.read()
+        punc_file = open(os.path.join(PATH, "punctuation_file_in_prob.txt"), "r", encoding="utf-16")
+        # "punc_file" contains punctuations.
+        punc = punc_file.read()
         subs = ""
         length = len(string)
         for num in range(length):
@@ -166,7 +166,7 @@ class Segmentation:
                         pass
                 else:
                     pass
-        self.punc.close()
+        punc_file.close()
         return subs, mark_list
 
     def set_class_property_dic(self, instance):
