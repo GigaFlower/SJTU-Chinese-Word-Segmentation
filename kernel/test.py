@@ -67,6 +67,9 @@ def test(start=0, amount=20):
     """
     seg = kernel.Segmentation()
 
+    output = open("test_result", 'w')
+    tmp = ""
+
     src_file = open('test.txt', 'r', encoding='utf-16')
     ans_file = open('answer.txt', 'r', encoding='utf-16')
 
@@ -92,31 +95,46 @@ def test(start=0, amount=20):
         c += dc
         e += de
         if de == 0:
-            print('Sentence #%d passed!' % (test_cnt+start))
+            tmp = 'Sentence #%d passed!' % (test_cnt+start)
+            output.write(tmp)
+            print(tmp)
         else:
-            print('Sentence #%d failed!' % (test_cnt+start))
-            print('Correct answer:')
-            print(ans)
-            print('Your answer:')
-            print(ret)
+            tmp = 'Sentence #%d failed!\n' % (test_cnt+start)
+            tmp += 'Correct answer:\n'
+            tmp += ans
+            tmp += '\nYour answer:\n'
+            tmp += ret
+            tmp += '\n'
+            output.write(tmp)
+            print(tmp)
 
     if amount == -1:
         amount = test_cnt - 1
-    print('\nAll %d tests done.' % amount)
-    print('In all %d words in correct answer' % N)
-    print('%d words have been covered' % c)
-    print('While %d words are split wrong' % e)
+
+    tmp = '\n\n'
+    tmp += '=' * 40
+    tmp += '\nAll %d tests done.\n' % amount
+    tmp += 'In all %d words in correct answer\n' % N
+    tmp += '%d words have been covered\n' % c
+    tmp += 'While %d words are split wrong\n' % e
 
     r = c / N
     p = c / (c + e)
     fm = 2 * p * r / (p + r)
     er = e / N
 
-    print('Recall:%.2f%%' % (r*100))
-    print('Precision:%.2f%%' % (p*100))
-    print('f-measure:%.2f%%' % (fm*100))
-    print('Error Rate:%.2f%%' % (er*100))
+    tmp += '-' * 40
+    tmp += '\nRecall:%.2f%%\n' % (r*100)
+    tmp += 'Precision:%.2f%%\n' % (p*100)
+    tmp += 'f-measure:%.2f%%\n' % (fm*100)
+    tmp += 'Error Rate:%.2f%%\n' % (er*100)
+    tmp += '=' * 20
+    tmp += 'End'
+    tmp += '=' * 20
 
+    print(tmp)
+    output.write(tmp)
+    output.close()
 
 if __name__ == '__main__':
-    test()
+    test(180, 100)

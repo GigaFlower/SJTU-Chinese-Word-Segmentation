@@ -51,16 +51,10 @@ class DemoView:
         segment_menu.add_command(label="Word Segment", command=self.word_segment)
         segment_menu.add_command(label="File to file")
 
-        # lexicon_menu
-        lexicon_menu = Menu(main_menu)
-        lexicon_menu.add_command(label="Load")
-        lexicon_menu.add_command(label="Add")
-        lexicon_menu.add_command(label="Modify")
-        lexicon_menu.add_command(label="Delete")
-
-        # rule_menu
-        rule_menu = Menu(main_menu)
-        rule_menu.add_command(label="Rule", command=self.rule_load())
+        # data_menu
+        data_menu = Menu(main_menu)
+        data_menu.add_command(label="Lexicon", command=self.load_lexicon)
+        data_menu.add_command(label="Rule", command=self.load_rule)
 
         # help_menu
         help_menu = Menu(main_menu)
@@ -71,8 +65,7 @@ class DemoView:
         main_menu.add_cascade(label="File", menu=file_menu)
         main_menu.add_cascade(label="Edit", menu=edit_menu)
         main_menu.add_cascade(label="Segment", menu=segment_menu)
-        main_menu.add_cascade(label="Lexicon", menu=lexicon_menu)
-        main_menu.add_cascade(label="Rule", menu=rule_menu)
+        main_menu.add_cascade(label="Data", menu=data_menu)
         main_menu.add_cascade(label="Help", menu=help_menu)
 
         self.root.configure(menu=main_menu)
@@ -151,9 +144,9 @@ class DemoView:
         pass
 
     # Lexicon & Rule
-    def lexicon_load(self):
+    def load_lexicon(self):
         pass
-    def rule_load(self):
+    def load_rule(self):
         pass
 
     # Help & About

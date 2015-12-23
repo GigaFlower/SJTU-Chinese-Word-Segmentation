@@ -15,7 +15,7 @@ class Segmentation:
     """This class handles all staff relating to segmentation"""
     def __init__(self):
         # Initialize lexicon
-        self.lex = Lexicon()
+        self.lexicon = Lexicon()
 
         # Initialize rules
         self.rules = Rule()
