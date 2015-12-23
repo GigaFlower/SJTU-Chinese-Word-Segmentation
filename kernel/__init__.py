@@ -48,7 +48,8 @@ class Segmentation:
         """
         substring = ""
         string_complete = []
-        punc_stan = self.sen_punc_stan.read()
+        punc_stan = open(os.path.join(PATH, "punctuation_standard_file.txt"), "r",
+                             encoding="utf-16").read()
         for cha in raw:
             if cha == "\n":
                 string_complete.append(substring)
@@ -63,7 +64,12 @@ class Segmentation:
                     substring = ""
                 else:
                     pass
-        string_complete.append(substring)
+        if substring != "":
+            string_complete.append(substring)
+            # If the string doesn't end up with the sentence segmentation
+            # punctuation, append the last string.
+        else:
+            pass
         self.sen_punc_stan.close()
         return string_complete
 
@@ -516,6 +522,7 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("我很喜欢《三体》这一本书，写的实在是太好了。"))
+    print(s.sentence_segment("我很喜欢《三体》这一本书，写的实在是太好了。"))
+    print(s.sentence_segment("我很喜欢《三体》这一本书，写的实在是太好了。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
