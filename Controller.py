@@ -75,7 +75,6 @@ class MainController:
         """
         return self.model.word_segment(sentence)
 
-    def get_lexicon(self):
 
 
 if __name__ == '__main__':

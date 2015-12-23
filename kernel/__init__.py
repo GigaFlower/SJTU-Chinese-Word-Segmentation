@@ -5,7 +5,7 @@ Code responsible for service logic
 
 import time
 import os
-from kernel import database, dts_calculate, mi, judge, term_segmentation, special_mark_segmentation
+from kernel import dts_calculate, mi, judge, term_segmentation, special_mark_segmentation
 
 SPLIT = '|'
 PATH = os.path.split(os.path.realpath(__file__))[0]
@@ -15,7 +15,7 @@ class Segmentation:
     """This class handles all staff relating to segmentation"""
     def __init__(self):
         # Initialize lexicon
-        self.lexicon = Lexicon()
+        self.lexicon = Rewirte_Lexicon()
 
         # Initialize rules
         self.rules = Rule()
@@ -24,10 +24,10 @@ class Segmentation:
                              encoding="utf-16")
         # "sen_punc_stan" contains sentence segment punctuations.
 
-        self.d = database.Data()
+        self.d = Lexicon()
         self.dic_pb, self.dic_cha, self.dic_term = self.d.get_dictionary()
 
-        self.t = term_segmentation.Term_seg()
+        self.t = term_segmentation.TermSeg()
         self.sp = special_mark_segmentation.Special_mark_seg()
         self.dts = dts_calculate.Dts()
         self.m = mi.Mi()
@@ -205,8 +205,7 @@ class Segmentation:
 
         self.j.mark_list = mark_list
 
-
-class Data:
+class Lexicon:
     def __init__(self):
         """
         There are three class properties.
@@ -344,7 +343,8 @@ class Data:
         dic_cha = self.solve_cha()
         return dic_pb,dic_cha,dic_term
 
-class Lexicon:
+
+class Rewirte_Lexicon:
     """This class represents a lexicon library"""
     def __init__(self):
         """

@@ -1,5 +1,5 @@
 
-class Term_seg:
+class TermSeg:
     """Term segmentation"""
     def __init__(self):
         """

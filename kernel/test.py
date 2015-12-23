@@ -6,15 +6,6 @@ import kernel
 import re, time
 
 
-def record_time(method):
-    """This function extend function with the ability of recording the time consumed"""
-    def new_method(*args):
-        t0 = time.time()
-        method(*args)
-        print("Time consumed:%.3fs" % (time.time()-t0))
-    return new_method
-
-
 def convert_to_index_list(string: str) -> list:
     """
     This function convert a segmentation result to a list of start and end index of every word
@@ -59,7 +50,6 @@ def diff(ans: str, correct_ans: str) -> (int, int, int):
     return N, c, e
 
 
-@record_time
 def test(start=0, amount=20):
     """
     Do test according to test.txt and answer.txt
@@ -140,4 +130,4 @@ def test(start=0, amount=20):
     output.close()
 
 if __name__ == '__main__':
-    test(180, 100)
+    test(180, 20)
