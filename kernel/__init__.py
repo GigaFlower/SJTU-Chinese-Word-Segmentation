@@ -15,7 +15,11 @@ class Segmentation:
     """This class handles all staff relating to segmentation"""
     def __init__(self):
         # Initialize lexicon
-        self.lexicon = Rewirte_Lexicon()
+        self.lexicon = Lexicon()
+        self.lexicon.set_dictionary()
+
+        # Initialize lexicon rewriting system.
+        self.rewr_lexicon = Rewirte_Lexicon()
 
         # Initialize rules
         self.rules = Rule()
@@ -23,9 +27,6 @@ class Segmentation:
         self.sen_punc_stan = open(os.path.join(PATH, "punctuation_standard_file.txt"), "r",
                              encoding="utf-16")
         # "sen_punc_stan" contains sentence segment punctuations.
-
-        self.d = Lexicon()
-        self.dic_pb, self.dic_cha, self.dic_term = self.d.get_dictionary()
 
         self.t = term_segmentation.TermSeg()
         self.sp = special_mark_segmentation.Special_mark_seg()
@@ -186,9 +187,9 @@ class Segmentation:
         "dic_cha" is the dictionary with characters and their probabilities.
         "dic_term" is the dictionary with words marked with "TERM".
         """
-        instance.dic_pb = self.dic_pb
-        instance.dic_cha = self.dic_cha
-        instance.dic_term = self.dic_term
+        instance.dic_pb = self.lexicon.dic_pb
+        instance.dic_cha = self.lexicon.dic_cha
+        instance.dic_term = self.lexicon.dic_term
 
     def set_judge_property(self, dts_mean, dts_st_der, string_dts_list, mi_mean,
                             mi_st_der, string_mi_list, mark_list):
@@ -211,18 +212,39 @@ class Segmentation:
 
         self.j.mark_list = mark_list
 
+    def get_lexicon():
+        """
+        Only called by controller.
+        This function will get the original wordlist and the term lexicon.
+        The wordlist is in the list form and the term lexicon is in the
+        dictionary form.
+        """
+        list_orgwd = self.lexicon.list_orgwd
+        dic_term = self.lexicon.dic_term
+        return list_orgwd, dic_term
+
 class Lexicon:
     def __init__(self):
         """
-        There are three class properties.
+        There are eight class properties.
 
         "file_word" represents the word lexicon file.
         "file_term" represents the term lexicon file.
         "file_character" represents the character lexicon file.
+        "file_origin_word" represents the original complete word lexicon file.
+        "dic_pb" is the dictionary with words and their probabilities.
+        "dic_cha" is the dictionary with characters and their probabilities.
+        "dic_term" is the dictionary with words marked with "TERM".
+        "dic_orgwd" is the dictionary with original words and their probabilities.
         """
         self.file_word = open(os.path.join(PATH, "wordlist_v2.txt"), "r", encoding="utf-16")
+        self.file_origin_word = open(os.path.join(PATH, "wordlist.txt"), "r", encoding="utf-16")
         self.file_term = open(os.path.join(PATH, "termlist.txt"), "r", encoding="utf-16")
         self.file_character = open(os.path.join(PATH, "characterlist.txt"), "r", encoding="utf-16")
+        self.dic_pb = {}
+        self.dic_cha = {}
+        self.dic_term = {}
+        self.list_orgwd = []
 
     def split_into_list(self, file):
         """
@@ -343,11 +365,23 @@ class Lexicon:
         self.file_character.close()
         return dic_cha
 
-    def get_dictionary(self):
-        dic_pb = self.solve_word()
-        dic_term = self.solve_term()
-        dic_cha = self.solve_cha()
-        return dic_pb,dic_cha,dic_term
+    def solve_origin_wordlist(self):
+        """
+        This function will create a list of the original wordlist, which will
+        be modified by users.
+        """
+        list_spilt = self.split_into_list(self.file_origin_word)
+        word_list = self.combine(list_spilt)
+        wd, pb, pro = self.relist(word_list)
+        # "wd" means word, "pb" means probability, "pro" means property
+        self.file_origin_word.close()
+        return wd
+
+    def set_dictionary(self):
+        self.dic_pb = self.solve_word()
+        self.dic_term = self.solve_term()
+        self.dic_cha = self.solve_cha()
+        self.list_orgwd = self.solve_origin_wordlist()
 
 
 class Rewirte_Lexicon:
@@ -522,7 +556,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.sentence_segment("我很喜欢《三体》这一本书，写的实在是太好了。"))
-    print(s.sentence_segment("我很喜欢《三体》这一本书，写的实在是太好了。"))
+    print(s.word_segment("我很喜欢《三体》这一本书，写的实在是太好了。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
