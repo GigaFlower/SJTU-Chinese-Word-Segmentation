@@ -87,16 +87,16 @@ class DemoView:
     def set_text_pad(self):
         """This function setting the properties of raw_text_pad,sen_text_pad and wrd_text_pad"""
         # setting raw_text_pad
-        self.raw_text_pad = Text(self.root)
-        self.raw_text_pad.pack()
+        self.raw_text_pad = Text(self.root,width="40",height="40")
+        self.raw_text_pad.pack(side=LEFT,fill=Y)
 
         # setting sen_text_pad
-        self.sen_text_pad = Text(self.root)
-        self.sen_text_pad.pack()
+        self.sen_text_pad = Listbox(self.root,width="40",height="40")
+        self.sen_text_pad.pack(side=LEFT,fill=Y)
 
         # setting wrd_text_pad
-        self.wrd_text_pad = Text(self.root)
-        self.wrd_text_pad.pack()
+        self.wrd_text_pad = Text(self.root,width="40",height="40")
+        self.wrd_text_pad.pack(side=LEFT,fill=Y)
 
     def make_setting_pad(self, tab=0):
         """Make setting_pad which is to be trigger from clicking at 'Lexicon' or 'Rule' in menu"""
@@ -187,13 +187,14 @@ class DemoView:
         raw = raw.strip()
         if raw:
             aft_seg = self._sen_seg(raw)
-            self.sen_text_pad.delete('1.0', 'end')
-            self.sen_text_pad.insert('1.0', aft_seg)
+            self.sen_text_pad.delete(0, END)
+            self.sen_text_pad.insert('end', aft_seg)
         else:
             messagebox.showwarning("An error occurs", "There is no text to be segmented!")
 
     def word_segment(self):
-        raw = self.sen_text_pad.get('1.0', 'end')
+        raw = self.sen_text_pad.get(0, END)
+        raw = ''.join(raw)
         raw = raw.strip()
         if raw:
             aft_seg = self._wrd_seg(raw)
@@ -294,3 +295,5 @@ class DemoView:
 
     def _get_rules(self) -> list:
         return self.controller.get_rule_description()
+
+
