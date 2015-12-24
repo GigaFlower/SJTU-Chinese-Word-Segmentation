@@ -5,7 +5,7 @@ Code responsible for service logic
 
 import time
 import os
-from kernel import dts_calculate, mi, judge, term_segmentation, special_mark_segmentation
+from kernel import dts_calculate, mi, judge, term_segmentation, special_mark_segmentation, rule_segmentation
 
 SPLIT = '|'
 PATH = os.path.split(os.path.realpath(__file__))[0]
@@ -22,13 +22,14 @@ class Segmentation:
         self.rewr_lexicon = Rewrite_Lexicon()
         self.rewr_lexicon.rewrite_lexicon()
 
-        # Initialize rules
-        self.rules = Rule()
+        # Initialize rule
+        self.r = Rule()
+        self.dic_rule = self.r.get_rule()
 
         # Particular rule buttons
         self.rule_term = True  # Rule term segmentation
         self.rule_spec_mark = True  # Rule special mark segmentation
-
+        self.rule_example = True  # Rule particular examples
 
         self.sen_punc_stan = open(os.path.join(PATH, "punctuation_standard_file.txt"), "r",
                              encoding="utf-16")
@@ -36,6 +37,7 @@ class Segmentation:
 
         self.t = term_segmentation.TermSeg()
         self.sp = special_mark_segmentation.Special_mark_seg()
+        self.r_seg = rule_segmentation.RuleSeg()
         self.dts = dts_calculate.Dts()
         self.m = mi.Mi()
         self.j = judge.Judge()
@@ -92,16 +94,23 @@ class Segmentation:
         sent back, and through the "combine" function, the separate characters
         will be combined again with the separate mark "|".
         """
+        mark_list = [0] * (len(raw) - 1)
+
         if self.rule_term:
             self.set_class_property_dic(self.t)
+            self.t.mark_list = mark_list
             string_aft_termseg, mark_list = self.t.retrieve(raw)
         else:
             string_aft_termseg = raw
-            mark_list = [0] * (len(raw) - 1)
 
         if self.rule_spec_mark:
             self.sp.mark_list = mark_list
             mark_list = self.sp.retrieve(string_aft_termseg)
+
+        if self.rule_example:
+            self.r_seg.mark_list = mark_list
+            self.r_seg.dic_rule = self.dic_rule
+            mark_list = self.r_seg.retrieve(string_aft_termseg)
 
         string_aft_sep_punc, mark_list = self.separate_punc(string_aft_termseg, mark_list)
         string = " " + string_aft_sep_punc + " "
@@ -558,14 +567,67 @@ class Rewrite_Lexicon:
 
 class Rule:
     """This class represents a rule library"""
-    pass
+    def __init__(self):
+        pass
+
+    def combine_rule(self, list_split):
+        """
+        This function will combine the elements of the same word into a list
+        in the form of items and relationship.
+        """
+        items = []
+        relationship = []
+        for num in range(len(list_split)):
+            if num % 2 == 0:
+                items.append(list_split[num])
+            else:
+                relationship.append(list_split[num])
+        return items, relationship
+
+    def rela_to_list(self, relationship):
+        """
+        This function will turn the relationships which are in the string form
+        into lists.
+        """
+        new_list = []
+        for element in relationship:
+            element_aft_split = element.split(",")
+            new_list.append(element_aft_split)
+        return new_list
+
+    def dictionary(self,list_a,list_b):
+        """
+        This function will make a dictionary for two lists.
+        """
+        dic=dict( zip(list_a, list_b) )
+        return dic
+
+    def get_rule(self):
+        """
+        NOTE: The comma in the file "rule.txt" MUST be in English form.
+
+        This is the main structure of the special rule getting procedure.
+
+        The special rule contains the correct segmentation of some particular
+        examples, which can improve the precision of the whole segmentation to
+        some extent.
+
+        The rules are stored in the "rule.txt". The system will first read it
+        and split it into scores of lists. Then the list will be turned into a
+        dictionary, which will be used in the segmentation part.
+        """
+        file_rule = open(os.path.join(PATH, "rule.txt"), "r", encoding="utf-16")
+        rule_string = file_rule.read()
+        rule_list = rule_string.split()
+        items, relationship = self.combine_rule(rule_list)
+        relationship_in_list = self.rela_to_list(relationship)
+        dic_rule = self.dictionary(items, relationship_in_list)
+        return dic_rule
 
 if __name__ == '__main__':
-    ##l = Lexicon()
-    ##l.rewrite_lexicon()
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("我很喜欢《三体》高锰酸根"))
+    print(s.word_segment("今天国足抵沪"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))

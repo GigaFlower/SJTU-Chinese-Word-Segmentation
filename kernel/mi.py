@@ -42,8 +42,7 @@ class Mi:
         self.punctuation_string = file.read()
         file.close()
 
-    @staticmethod
-    def divide(string):
+    def divide(self, string):
         """
         This function will divide the whole sentence into several lists,
         including the adjacent 2-word-long substring.
