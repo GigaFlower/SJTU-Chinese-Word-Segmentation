@@ -236,12 +236,11 @@ class Segmentation:
         """
         Only called by controller.
         This function will get the original wordlist and the term lexicon.
-        The wordlist is in the list form and the term lexicon is in the
-        dictionary form.
+        The wordlist and the term lexicon are both in the dictionary form.
         """
-        list_orgwd = self.lexicon.list_orgwd
+        dic_orgwd = self.rewr_lexicon.dic_contro_wd
         dic_term = self.lexicon.dic_term
-        return list_orgwd, dic_term
+        return dic_orgwd, dic_term
 
     def get_rule_description(self):
         des = []
@@ -644,6 +643,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("今天国足抵沪"))
+    print(s.word_segment("主办单位对征集到的优秀志愿者歌曲进行了几种展示"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
