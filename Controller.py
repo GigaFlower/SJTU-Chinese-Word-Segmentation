@@ -49,9 +49,6 @@ class MainController:
         >>> c.sentence_segment("你好，再见。")
         ['你好，', '再见。']
 
-        QUESTIONS:
-        1.Does the list contain punctuation at the end of each sentence?
-        2.Can it recognize both Chinese and English punctuations?
         """
         aft_seg = self.kernel.sentence_segment(raw)
         aft_seg = [x for x in aft_seg if x.strip()]
@@ -69,16 +66,14 @@ class MainController:
         >>> c = MainController()
         >>> c.word_segment("我喜欢足球")
         '我|喜欢|足球'
-
-        QUESTIONS:
-        1.What should be the separator character?
         """
         return self.kernel.word_segment(sentence)
 
     def get_lexicon(self) -> list:
         """Get lexicon from self.kernel"""
         lex = self.kernel.get_lexicon()
-        return lex
+        print(lex)
+        # return lex
 
     def get_rule_description(self) -> list:
         """Get rules from self.kernel"""

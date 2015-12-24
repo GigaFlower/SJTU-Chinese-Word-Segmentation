@@ -244,8 +244,8 @@ class Segmentation:
 
     def get_rule_description(self):
         des = []
-        des.append("Term segmentation")
-        des.append("Special mark segmentation")
+        des.append("Proper noun segmentation")
+        des.append("Double/Single quotation intelligent identify")
         des.append("Particular situation segmentation")
         return des
 
