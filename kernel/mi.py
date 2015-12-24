@@ -121,10 +121,10 @@ class Mi:
         prob_wd = self.search_prob(wd)
         prob_x = self.search_prob(x)
         prob_y = self.search_prob(y)
-        mi = math.log2(prob_wd * 1000 / (prob_x * prob_y))
+        mi = math.log(prob_wd * 1000 / (prob_x * prob_y), 2)
         return mi
 
-    def get_mi(self,string_list):
+    def get_mi(self, string_list):
         """
         This function will get the mi list.
         The result is a list including the 2-long word and its mi value.
