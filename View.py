@@ -65,6 +65,7 @@ class DemoView:
         segment_menu.add_command(label="Word Segment", command=self.word_segment)
         segment_menu.add_command(label="Segment all", command=self.segment_all)
         segment_menu.add_command(label="File to file", command=self.file_to_file)
+        segment_menu.add_command(label="Clear", accelerator="Shift+Ctrl+C", command=self.clear)
 
         # data_menu
         data_menu = Menu(main_menu)
@@ -168,6 +169,10 @@ class DemoView:
         pass
 
     # Segment menu
+    def clear(self):
+        self.sen_text_pad.delete(0, END)
+        self.wrd_text_pad.delete('1.0', END)
+
     def segment_all(self):
         """
         If sentence segmentation has not yet been done,
@@ -176,19 +181,18 @@ class DemoView:
         apply word segmentation to sentences selected.
         If no sentence is selected, regard as all sentences have been selected
         """
-        if not self.has_raw:
-            messagebox.showerror("An error occurs", "There is no text to be segmented!")
-        elif not self.has_sen:
-            self.sentence_segment()
-            # FIXME: Should be all sentences but this function is unavailable yet
+        if self.has_raw:
+            self.clear()
+            if not self.has_sen:
+                self.sentence_segment()
+            self.word_segment()
         else:
-            self.sentence_segment()
+            messagebox.showerror("An error occurs", "There is no text to be segmented!")
 
     def sentence_segment(self):
-        raw = self.raw_text_pad.get('1.0', 'end')
-        raw = raw.strip()
-        if raw:
-            aft_seg = self._sen_seg(raw)
+        if self.has_raw:
+            self.clear()
+            aft_seg = self._sen_seg(self.raw_text_pad.get('1.0', 'end'))
             self.sen_text_pad.delete(0, END)
             for sen in aft_seg:
                 self.sen_text_pad.insert('end', sen)
@@ -196,14 +200,21 @@ class DemoView:
             messagebox.showwarning("An error occurs", "There is no text to be segmented!")
 
     def word_segment(self):
-        selected_sen = self.sen_text_pad.curselection()
-        if not selected_sen:
-            selected_sen = [i for i in range(self.sen_text_pad.size())]
+        """
+        If sentence segmentation has already been done,
+        apply word segmentation to sentences selected.
+        If no sentence is selected, segment all sentences.
+        """
+        if self.has_sen:
+            selected_sen = self.sen_text_pad.curselection()
+            if not selected_sen:
+                selected_sen = [i for i in range(self.sen_text_pad.size())]
 
-        aft_seg = [self._wrd_seg(self.sen_text_pad.get(ind)) for ind in selected_sen]
-        self.wrd_text_pad.delete('1.0', 'end')
-        self.wrd_text_pad.insert('1.0', "\n".join(aft_seg))
-        # messagebox.showwarning("An error occurs", "There is no sentence to be segmented!")
+            aft_seg = [self._wrd_seg(self.sen_text_pad.get(ind)) for ind in selected_sen]
+            self.wrd_text_pad.delete('1.0', 'end')
+            self.wrd_text_pad.insert('1.0', "\n".join(aft_seg))
+        else:
+            messagebox.showwarning("An error occurs", "There is no sentence to be segmented!")
 
     def file_to_file(self, first_in=True, src=None, des=None):
         """
@@ -286,7 +297,7 @@ class DemoView:
     @property
     def has_sen(self):
         """Whether sentence segmentation has been made"""
-        return self.sen_text_pad.get('1.0', 'end').strip() != ""
+        return self.sen_text_pad.get(0, 'end') != ()
 
     # Following functions involves conversation with controller
     # All interaction with controller are done below
