@@ -42,7 +42,7 @@ class Segmentation:
         self.m = mi.Mi()
         self.j = judge.Judge()
 
-    def sentence_segment(self, raw: str) -> str:
+    def sentence_segment(self, raw: str) -> list:
         """
         This function will cut the whole string into several sentences according
         to the sentence segment punctuations.

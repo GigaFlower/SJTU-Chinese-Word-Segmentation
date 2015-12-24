@@ -47,14 +47,15 @@ class MainController:
         Examples:
         >>> c = MainController()
         >>> c.sentence_segment("你好，再见。")
-        '你好，\\n再见。\\n'
+        ['你好，', '再见。']
 
         QUESTIONS:
         1.Does the list contain punctuation at the end of each sentence?
         2.Can it recognize both Chinese and English punctuations?
         """
-        sen_list = self.kernel.sentence_segment(raw)
-        return "\n".join(sen_list)
+        aft_seg = self.kernel.sentence_segment(raw)
+        aft_seg = [x for x in aft_seg if x.strip()]
+        return aft_seg
 
     def word_segment(self, sentence: str) -> str:
         """

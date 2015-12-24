@@ -16,7 +16,7 @@ class DemoView:
         # Only remind coder that there exist these properties
         # Actual initialization is done in self.make_XXX()
         self.raw_text_pad = Text()
-        self.sen_text_pad = Text()
+        self.sen_text_pad = Listbox()
         self.wrd_text_pad = Text()
 
         self.setting_window = ttk.Notebook()
@@ -88,16 +88,16 @@ class DemoView:
     def set_text_pad(self):
         """This function setting the properties of raw_text_pad,sen_text_pad and wrd_text_pad"""
         # setting raw_text_pad
-        self.raw_text_pad = Text(self.root,width="40",height="40")
-        self.raw_text_pad.pack(side=LEFT,fill=Y)
+        self.raw_text_pad = Text(self.root, width="40", height="40")
+        self.raw_text_pad.pack(side=LEFT, fill=Y)
 
         # setting sen_text_pad
-        self.sen_text_pad = Listbox(self.root,width="40",height="40")
-        self.sen_text_pad.pack(side=LEFT,fill=Y)
+        self.sen_text_pad = Listbox(self.root, width="40", height="40", selectmode=EXTENDED)
+        self.sen_text_pad.pack(side=LEFT, fill=Y)
 
         # setting wrd_text_pad
-        self.wrd_text_pad = Text(self.root,width="40",height="40")
-        self.wrd_text_pad.pack(side=LEFT,fill=Y)
+        self.wrd_text_pad = Text(self.root, width="40", height="40")
+        self.wrd_text_pad.pack(side=LEFT, fill=Y)
 
     def make_setting_pad(self, tab=0):
         """Make setting_pad which is to be trigger from clicking at 'Lexicon' or 'Rule' in menu"""
@@ -190,20 +190,20 @@ class DemoView:
         if raw:
             aft_seg = self._sen_seg(raw)
             self.sen_text_pad.delete(0, END)
-            self.sen_text_pad.insert('end', aft_seg)
+            for sen in aft_seg:
+                self.sen_text_pad.insert('end', sen)
         else:
             messagebox.showwarning("An error occurs", "There is no text to be segmented!")
 
     def word_segment(self):
-        raw = self.sen_text_pad.get(0, END)
-        raw = ''.join(raw)
-        raw = raw.strip()
-        if raw:
-            aft_seg = self._wrd_seg(raw)
-            self.wrd_text_pad.delete('1.0', 'end')
-            self.wrd_text_pad.insert('1.0', aft_seg)
-        else:
-            messagebox.showwarning("An error occurs", "There is no sentence to be segmented!")
+        selected_sen = self.sen_text_pad.curselection()
+        if not selected_sen:
+            selected_sen = [i for i in range(self.sen_text_pad.size())]
+
+        aft_seg = [self._wrd_seg(self.sen_text_pad.get(ind)) for ind in selected_sen]
+        self.wrd_text_pad.delete('1.0', 'end')
+        self.wrd_text_pad.insert('1.0', "\n".join(aft_seg))
+        # messagebox.showwarning("An error occurs", "There is no sentence to be segmented!")
 
     def file_to_file(self, first_in=True, src=None, des=None):
         """
@@ -272,7 +272,7 @@ class DemoView:
         for r, b in zip(self.rule_description, self.rule_booleans):
             Checkbutton(self.rule_pad, text=r, variable=b).pack(expand=True, fill=BOTH)
 
-# Help & About
+        # Help & About
     def help(self):
         pass
     def about(self):
@@ -291,7 +291,7 @@ class DemoView:
     # Following functions involves conversation with controller
     # All interaction with controller are done below
     # ----------------------------------------------------------
-    def _sen_seg(self, raw: str) -> str:
+    def _sen_seg(self, raw: str) -> list:
         return self.controller.sentence_segment(raw)
 
     def _wrd_seg(self, raw: str) -> str:
