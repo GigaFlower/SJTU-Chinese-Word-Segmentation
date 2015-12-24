@@ -25,7 +25,8 @@ class DemoView:
         self.rule_pad = Text()
 
         self.setting_window_on = False
-        self.rule_booleans = {}
+        self.rule_booleans = []
+        self.rule_description = []
 
         self.set_text_pad()
         self.make_menu()
@@ -107,6 +108,7 @@ class DemoView:
         # Override window delete function
         def delete_setting_window():
             self.setting_window_on = False
+            self._set_rules()
             self.setting_window.destroy()
         self.setting_window.protocol('WM_DELETE_WINDOW', delete_setting_window)
 
@@ -256,16 +258,21 @@ class DemoView:
         pass
 
     def load_rule(self):
-        """Load rules and add corresponding checkbutton to self.rule_pad"""
-        self.rule_booleans = {}
-        rul = self._get_rules()
-        for r in rul:
-            b = BooleanVar()
-            self.rule_booleans[r] = b
-            Checkbutton(self.rule_pad, text=r, variable=b).pack(expand=True, fill=BOTH)
-            # FIXME: I want to memorize users' setting instead of set all to 0!
+        """
+        If no rules is loaded,it initialize rule variables
+        else,add corresponding checkbutton to self.rule_pad
+        """
+        if not self.rule_booleans:
+            self.rule_description = self._get_rules()
+            for _ in self.rule_description:
+                b = BooleanVar()
+                self.rule_booleans.append(b)
+                # FIXME: I want to memorize users' setting instead of set all to 0!
 
-    # Help & About
+        for r, b in zip(self.rule_description, self.rule_booleans):
+            Checkbutton(self.rule_pad, text=r, variable=b).pack(expand=True, fill=BOTH)
+
+# Help & About
     def help(self):
         pass
     def about(self):
@@ -273,12 +280,12 @@ class DemoView:
 
     @property
     def has_raw(self):
-        """This function is used to check whether any file has been loaded"""
+        """Whether any file has been loaded into text_pad"""
         return self.raw_text_pad.get('1.0', 'end').strip() != ""
 
     @property
     def has_sen(self):
-        """This function is used to check whether sentence segmentation has been made"""
+        """Whether sentence segmentation has been made"""
         return self.sen_text_pad.get('1.0', 'end').strip() != ""
 
     # Following functions involves conversation with controller
@@ -296,4 +303,5 @@ class DemoView:
     def _get_rules(self) -> list:
         return self.controller.get_rule_description()
 
-
+    def _set_rules(self):
+        self.controller.set_rule_booleans(self.rule_booleans)

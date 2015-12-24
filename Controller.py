@@ -8,7 +8,7 @@ class MainController:
     """The main controller of app activity"""
     def __init__(self):
         self.view = View.DemoView(self)
-        self.model = kernel.Segmentation()
+        self.kernel = kernel.Segmentation()
 
     def run(self):
         self.view.run()
@@ -32,7 +32,7 @@ class MainController:
         except IOError:
             print("Can't find file!")
         except UnicodeDecodeError:
-            with open(filename, "r", encoding='utf') as f:
+            with open(filename, "r", encoding='gbk') as f:
                 context = f.read()
         return context
 
@@ -53,7 +53,7 @@ class MainController:
         1.Does the list contain punctuation at the end of each sentence?
         2.Can it recognize both Chinese and English punctuations?
         """
-        sen_list = self.model.sentence_segment(raw)
+        sen_list = self.kernel.sentence_segment(raw)
         return "\n".join(sen_list)
 
     def word_segment(self, sentence: str) -> str:
@@ -72,19 +72,20 @@ class MainController:
         QUESTIONS:
         1.What should be the separator character?
         """
-        return self.model.word_segment(sentence)
+        return self.kernel.word_segment(sentence)
 
     def get_lexicon(self) -> list:
         """Get lexicon from self.kernel"""
-        return ["This", "function", "has not yet", "been implemented."]
+        lex = self.kernel.get_lexicon()
+        return lex
 
     def get_rule_description(self) -> list:
         """Get rules from self.kernel"""
-        return ["Rule1", "Rule2", "Rule3", "Rule4"]
+        return self.kernel.get_rule_description()
 
-    def set_rule_booleans(self):
+    def set_rule_booleans(self, bools):
         """Tell self.kernel which rule need to be obeyed"""
-        pass
+        self.kernel.set_rule_boolean(bools)
 
 if __name__ == '__main__':
     import doctest

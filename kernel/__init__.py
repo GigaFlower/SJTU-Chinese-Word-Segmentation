@@ -232,7 +232,7 @@ class Segmentation:
 
         self.j.mark_list = mark_list
 
-    def get_lexicon():
+    def get_lexicon(self):
         """
         Only called by controller.
         This function will get the original wordlist and the term lexicon.
@@ -242,6 +242,22 @@ class Segmentation:
         list_orgwd = self.lexicon.list_orgwd
         dic_term = self.lexicon.dic_term
         return list_orgwd, dic_term
+
+    def get_rule_description(self):
+        des = []
+        des.append("Term segmentation")
+        des.append("Special mark segmentation")
+        des.append("Particular situation segmentation")
+        return des
+
+    def set_rule_boolean(self, bools):
+        """
+        This function set whether rules are obeyed.
+        length of bools is unchecked
+        """
+        self.rule_term = bools[0]  # Rule term segmentation
+        self.rule_spec_mark = bools[1]  # Rule special mark segmentation
+        self.rule_example = bools[2]  # Rule particular examples
 
 class Lexicon:
     def __init__(self):
