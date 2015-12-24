@@ -643,6 +643,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("主办单位对征集到的优秀志愿者歌曲进行了几种展示"))
+    print(s.word_segment("评议会上，主办单位对征集到的优秀志愿者歌曲进行了集中展示。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
