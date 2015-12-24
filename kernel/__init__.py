@@ -19,10 +19,16 @@ class Segmentation:
         self.lexicon.set_dictionary()
 
         # Initialize lexicon rewriting system.
-        self.rewr_lexicon = Rewirte_Lexicon()
+        self.rewr_lexicon = Rewrite_Lexicon()
+        self.rewr_lexicon.rewrite_lexicon()
 
         # Initialize rules
         self.rules = Rule()
+
+        # Particular rule buttons
+        self.rule_term = True  # Rule term segmentation
+        self.rule_spec_mark = True  # Rule special mark segmentation
+
 
         self.sen_punc_stan = open(os.path.join(PATH, "punctuation_standard_file.txt"), "r",
                              encoding="utf-16")
@@ -86,11 +92,16 @@ class Segmentation:
         sent back, and through the "combine" function, the separate characters
         will be combined again with the separate mark "|".
         """
-        self.set_class_property_dic(self.t)
-        string_aft_termseg, mark_list = self.t.retrieve(raw)
+        if self.rule_term:
+            self.set_class_property_dic(self.t)
+            string_aft_termseg, mark_list = self.t.retrieve(raw)
+        else:
+            string_aft_termseg = raw
+            mark_list = [0] * (len(raw) - 1)
 
-        self.sp.mark_list = mark_list
-        mark_list = self.sp.retrieve(string_aft_termseg)
+        if self.rule_spec_mark:
+            self.sp.mark_list = mark_list
+            mark_list = self.sp.retrieve(string_aft_termseg)
 
         string_aft_sep_punc, mark_list = self.separate_punc(string_aft_termseg, mark_list)
         string = " " + string_aft_sep_punc + " "
@@ -226,7 +237,7 @@ class Segmentation:
 class Lexicon:
     def __init__(self):
         """
-        There are eight class properties.
+        There are 6 class properties.
 
         "file_word" represents the word lexicon file.
         "file_term" represents the term lexicon file.
@@ -235,16 +246,13 @@ class Lexicon:
         "dic_pb" is the dictionary with words and their probabilities.
         "dic_cha" is the dictionary with characters and their probabilities.
         "dic_term" is the dictionary with words marked with "TERM".
-        "dic_orgwd" is the dictionary with original words and their probabilities.
         """
         self.file_word = open(os.path.join(PATH, "wordlist_v2.txt"), "r", encoding="utf-16")
-        self.file_origin_word = open(os.path.join(PATH, "wordlist.txt"), "r", encoding="utf-16")
         self.file_term = open(os.path.join(PATH, "termlist.txt"), "r", encoding="utf-16")
         self.file_character = open(os.path.join(PATH, "characterlist.txt"), "r", encoding="utf-16")
         self.dic_pb = {}
         self.dic_cha = {}
         self.dic_term = {}
-        self.list_orgwd = []
 
     def split_into_list(self, file):
         """
@@ -365,32 +373,19 @@ class Lexicon:
         self.file_character.close()
         return dic_cha
 
-    def solve_origin_wordlist(self):
-        """
-        This function will create a list of the original wordlist, which will
-        be modified by users.
-        """
-        list_spilt = self.split_into_list(self.file_origin_word)
-        word_list = self.combine(list_spilt)
-        wd, pb, pro = self.relist(word_list)
-        # "wd" means word, "pb" means probability, "pro" means property
-        self.file_origin_word.close()
-        return wd
-
     def set_dictionary(self):
         self.dic_pb = self.solve_word()
         self.dic_term = self.solve_term()
         self.dic_cha = self.solve_cha()
-        self.list_orgwd = self.solve_origin_wordlist()
 
 
-class Rewirte_Lexicon:
+class Rewrite_Lexicon:
     """This class represents a lexicon library"""
     def __init__(self):
         """
         Load a lexicon from a txt file.
 
-        There are 7 class properties.
+        There are 8 class properties.
 
         "file_word" represents the original word lexicon file.
         "final_word_file" represents the final word lexicon file.
@@ -399,6 +394,8 @@ class Rewirte_Lexicon:
         "term_list" is the list with terms and its properties.
         "sentence_list" is the list with strings.
         "dic_pb" is the dictionary, i.e., the word lexicon.
+        "dic_contro_wd" is the dictionary without terms and it will be given to
+        controller.
         """
         self.lex = []
         ## src = open(filename, "r").read()
@@ -411,6 +408,7 @@ class Rewirte_Lexicon:
         self.term_list = []
         self.sentence_list = []
         self.dic_pb = {}
+        self.dic_contro_wd = {}
 
     def split_into_list(self, string):
         """
@@ -453,6 +451,14 @@ class Rewirte_Lexicon:
                     # If the cut two adjacent characters are in the dictionary,
                     # then add the probability; otherwise, create the new word
                     # into the dictionary.
+
+    def get_dic_contro_wd(self,dic):
+        for item in dic:
+            if 3 <= dic[item] <= 7:
+                n = dic[item]
+                self.dic_contro_wd[item] = 100000 * (8 ** (7 - n))
+            else:
+                self.dic_contro_wd[item] = dic[item]
 
     def relist(self, word_list):
         """
@@ -531,6 +537,10 @@ class Rewirte_Lexicon:
         self.rewrite_word_prob()
         word_with_pb_list = self.relist(self.word_list)
         self.dic_pb = dict(word_with_pb_list)
+
+        self.get_dic_contro_wd(self.dic_pb)
+        # To get the dictionary for controller.
+
         self.word_list = [list(item) for item in self.dic_pb.items()]
         # This word_list is used as a comparing probability list, where words
         # with more than 2 characters are obtained.
@@ -556,6 +566,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("我很喜欢《三体》这一本书，写的实在是太好了。"))
+    print(s.word_segment("我很喜欢《三体》高锰酸根"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
