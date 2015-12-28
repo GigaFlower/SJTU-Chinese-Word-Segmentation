@@ -59,7 +59,7 @@ def test(start=0, amount=20):
 
     seg = kernel.Segmentation()
 
-    output = open("test_result.txt", 'w')
+    output = open("test_result2.txt", 'w')
     src_file = open('test.txt', 'r', encoding='utf-16')
     ans_file = open('answer.txt', 'r', encoding='utf-16')
 

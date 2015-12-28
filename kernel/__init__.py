@@ -150,7 +150,7 @@ class Segmentation:
             if mark_list[num] == "left":
                 mark_list[num] = mark_list[num - 1]
             elif mark_list[num] == "right":
-                mark_list[num] == mark_list[num + 1]
+                mark_list[num] = mark_list[num + 1]
             else:
                 pass
         return mark_list
@@ -718,6 +718,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("我们二氧化钛的副主任牛有成上海交通大学强调。"))
+    print(s.word_segment("他强调，要以科学发展观为指导，以奥运为契机，把首都园林建设提升到一个新水平，成为展示首都形象的园林精品。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
