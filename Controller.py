@@ -57,7 +57,7 @@ class MainController:
     def word_segment(self, sentence: str) -> str:
         """
         This function receive a sentence from View,
-        ask for Model to do word segmentation,
+        ask Model to do word segmentation,
         return processed string to View.
 
         Only called by View.
@@ -76,14 +76,14 @@ class MainController:
         like ({'姑娘':25686900,...},{'五大三粗':['TERM']...})
         """
         lex = self.kernel.get_lexicon()
-        return lex[0].keys()
+        return sorted(lex[0].keys())
 
     def get_term(self) -> list:
         """
         Get terms from self.kernel
         """
         lex = self.kernel.get_lexicon()
-        return lex[1].keys()
+        return sorted(lex[1].keys())
 
     def get_rule_description(self) -> list:
         """Get rules from self.kernel"""

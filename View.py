@@ -132,7 +132,7 @@ class DemoView:
 
         Button(lexicon_tab, text='Load', width=7, command=self.load_lexicon).pack(expand=True)
         Button(lexicon_tab, text='Add', width=7, command=self.add_lexicon).pack(expand=True)
-        Button(lexicon_tab, text='Search', width=7, command=self.search_lexicon).pack(expand=True)
+        Button(lexicon_tab, text='Search', width=7, command=self.find_lexicon).pack(expand=True)
 
         Button(lexicon_tab, text='Delete', width=7, command=self.delete_lexicon).pack(expand=True)
         Button(lexicon_tab, text='Modify', width=7, command=self.modify_lexicon).pack(expand=True, padx=5)
@@ -273,8 +273,29 @@ class DemoView:
 
     def add_lexicon(self):
         pass
-    def search_lexicon(self):
-        pass
+
+    def find_lexicon(self):
+        find_lex = Toplevel(self.root)
+        find_lex.title("Find")
+        find_lex.transient(self.lexi_pad)
+
+        Label(find_lex, text="Find:")
+        target = StringVar()
+        Entry(find_lex, textvariable=target).pack(padx=4, pady=4)
+
+        def find(string):
+            lex = self.lexi_pad.get(0, END)
+            try:
+                ind = lex.index(string)
+            except ValueError:
+                messagebox.showerror("No such word!")
+            else:
+                self.lexi_pad.select_clear(0, END)
+                self.lexi_pad.select_set(ind)
+                self.lexi_pad.see(lex.index(string))
+
+        Button(find_lex, text="Go!", command=lambda: find(target.get())).pack(padx=4, pady=4)
+
     def delete_lexicon(self):
         pass
     def modify_lexicon(self):
@@ -330,4 +351,3 @@ class DemoView:
 
     def _set_rules(self):
         self.controller.set_rule_booleans(self.rule_booleans)
-
