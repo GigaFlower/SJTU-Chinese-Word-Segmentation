@@ -5,7 +5,7 @@ Code responsible for service logic
 
 import time
 import os
-from kernel import dts_calculate, mi, judge, term_segmentation, special_mark_segmentation, situation_segmentation
+from kernel import dts_calculate, mi, judge, segmentation_by_retrieve
 
 SPLIT = '|'
 PATH = os.path.split(os.path.realpath(__file__))[0]
@@ -36,9 +36,7 @@ class Segmentation:
                              encoding="utf-16")
         # "sen_punc_stan" contains sentence segment punctuations.
 
-        self.t = term_segmentation.TermSeg()
-        self.sp = special_mark_segmentation.Special_mark_seg()
-        self.situ = situation_segmentation.PartSituSeg()
+        self.r = segmentation_by_retrieve.Seg_By_Retrieve()
         self.dts = dts_calculate.Dts()
         self.m = mi.Mi()
         self.j = judge.Judge()
@@ -101,24 +99,10 @@ class Segmentation:
         """
         mark_list = [0] * (len(raw) - 1)
 
-        if self.rule_term:
-            self.set_class_property_dic(self.t)
-            self.t.mark_list = mark_list
-            self.t.term_VALVE = self.term_VALVE
-            string_aft_termseg, mark_list = self.t.retrieve(raw)
-        else:
-            string_aft_termseg = raw
+        self.set_retrieve_class_property(mark_list)
+        string_retrieve_seg, mark_list = self.r.retrieve(raw)
 
-        if self.rule_spec_mark:
-            self.sp.mark_list = mark_list
-            mark_list = self.sp.retrieve(string_aft_termseg)
-
-        if self.rule_situation:
-            self.situ.mark_list = mark_list
-            self.situ.dic_situ = self.dic_situ
-            mark_list = self.situ.retrieve(string_aft_termseg)
-
-        string_aft_sep_punc, mark_list = self.separate_punc(string_aft_termseg, mark_list)
+        string_aft_sep_punc, mark_list = self.separate_punc(string_retrieve_seg, mark_list)
         string = " " + string_aft_sep_punc + " "
         # Add " " in front of  the first character and behind the last character,
         # which will be used as an auxiliary in the calculation of mi and dtscore.
@@ -138,6 +122,34 @@ class Segmentation:
 
         subs = self.combine(mark_list, raw)
         return subs
+
+    def set_retrieve_class_property(self, mark_list):
+        """
+        Set the properties of the class Seg_By_Retrieve in
+        segmentation_by_retrieve.
+        """
+        self.r.mark_list = mark_list
+        self.r.dic_term = self.lexicon.dic_term
+        self.r.dic_situ = self.dic_situ
+        self.r.term_VALVE = self.term_VALVE
+        self.r.rule_term = self.rule_term
+        self.r.rule_spec_mark = self.rule_spec_mark
+        self.r.rule_situation = self.rule_situation
+
+    def set_class_property_dic(self, instance):
+        """
+        "instance" is in the form of "self.xx"
+
+        This function will set the dictionary properties of a particular
+        instance.
+
+        "dic_pb" is the dictionary with words and their probabilities.
+        "dic_cha" is the dictionary with characters and their probabilities.
+        "dic_term" is the dictionary with words marked with "TERM".
+        """
+        instance.dic_pb = self.lexicon.dic_pb
+        instance.dic_cha = self.lexicon.dic_cha
+        instance.dic_term = self.lexicon.dic_term
 
     def rewrite_marklist(self, mark_list):
         """
@@ -218,21 +230,6 @@ class Segmentation:
                     pass
         punc_file.close()
         return subs, mark_list
-
-    def set_class_property_dic(self, instance):
-        """
-        "instance" is in the form of "self.xx"
-
-        This function will set the dictionary properties of a particular
-        instance.
-
-        "dic_pb" is the dictionary with words and their probabilities.
-        "dic_cha" is the dictionary with characters and their probabilities.
-        "dic_term" is the dictionary with words marked with "TERM".
-        """
-        instance.dic_pb = self.lexicon.dic_pb
-        instance.dic_cha = self.lexicon.dic_cha
-        instance.dic_term = self.lexicon.dic_term
 
     def set_judge_property(self, dts_mean, dts_st_der, string_dts_list, mi_mean,
                             mi_st_der, string_mi_list, mark_list):
@@ -718,6 +715,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("他强调，要以科学发展观为指导，以奥运为契机，把首都园林建设提升到一个新水平，成为展示首都形象的园林精品。"))
+    print(s.word_segment("二氧化钛是我的房间抗裂砂浆"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
