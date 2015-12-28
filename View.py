@@ -20,15 +20,16 @@ class DemoView:
         self.wrd_text_pad = Text()
 
         self.setting_window = ttk.Notebook()
-        self.setting_tabs = ttk.Notebook()
-        self.lexi_pad = Text()
-        self.rule_pad = Text()
-
         self.setting_window_on = False
+        self.setting_tabs = ttk.Notebook()
+
+        self.lexi_pad = Listbox()
+        # No self.rule_pad because rules don't need lazy load.
+
         self.rule_booleans = []
         self.rule_description = []
 
-        self.set_text_pad()
+        self.make_text_pad()
         self.make_menu()
 
     def run(self):
@@ -70,7 +71,11 @@ class DemoView:
         # data_menu
         data_menu = Menu(main_menu)
         data_menu.add_command(label="Lexicon", command=self.show_lexicon_pane)
-        data_menu.add_command(label="Rule", command=self.show_rule_pane)
+        rule_menu = Menu(data_menu)
+        rule_menu = self.load_rules(rule_menu)
+        rule_menu.add_separator()
+        rule_menu.add_command(label="Edit", command=self.show_rule_pane)
+        data_menu.add_cascade(label="Rules", menu=rule_menu)
 
         # help_menu
         help_menu = Menu(main_menu)
@@ -86,7 +91,7 @@ class DemoView:
 
         self.root.configure(menu=main_menu)
 
-    def set_text_pad(self):
+    def make_text_pad(self):
         """This function setting the properties of raw_text_pad,sen_text_pad and wrd_text_pad"""
         # setting raw_text_pad
         self.raw_text_pad = Text(self.root, width="40", height="40")
@@ -101,7 +106,7 @@ class DemoView:
         self.wrd_text_pad.pack(side=LEFT, fill=Y)
 
     def make_setting_pad(self, tab=0):
-        """Make setting_pad which is to be trigger from clicking at 'Lexicon' or 'Rule' in menu"""
+        """Make setting_pad which is to be triggered from clicking at 'Lexicon' or 'Rule' in menu"""
         self.setting_window = Toplevel()
         self.setting_window.minsize(400, 200)
         self.setting_window.resizable = False
@@ -119,7 +124,11 @@ class DemoView:
         # Make lexicon_tab
         lexicon_tab = Frame(self.setting_tabs)
         self.lexi_pad = Listbox(lexicon_tab)
-        self.lexi_pad.pack(side=LEFT)
+        scrollbar = Scrollbar(lexicon_tab)
+        scrollbar.configure(command=self.lexi_pad.yview)
+        self.lexi_pad.configure(yscrollcommand=scrollbar.set)
+        self.lexi_pad.pack(side=LEFT, fill=Y)
+        scrollbar.pack(side=LEFT, fill=Y)
 
         Button(lexicon_tab, text='Load', width=7, command=self.load_lexicon).pack(expand=True)
         Button(lexicon_tab, text='Add', width=7, command=self.add_lexicon).pack(expand=True)
@@ -130,13 +139,16 @@ class DemoView:
 
         # Make rule_tab
         rule_tab = Frame(self.setting_tabs)
-        self.rule_pad = Frame(rule_tab)
-        self.load_rule()
-        self.rule_pad.pack()
+        Label(rule_tab, text="Particular situation:").grid(row=0, column=0)
+        Label(rule_tab, text="Proper nouns:").grid(row=0, column=1)
+        rule_pad_A = Listbox(rule_tab)
+        rule_pad_A.grid(row=1, column=0)
+        rule_pad_B = Listbox(rule_tab)
+        rule_pad_B.grid(row=1, column=1)
 
         #
         self.setting_tabs.add(lexicon_tab, text="Lexicon")
-        self.setting_tabs.add(rule_tab, text="Rule")
+        self.setting_tabs.add(rule_tab, text="Rules")
         self.setting_tabs.select(tab)
         self.setting_tabs.pack(expand=True, fill=BOTH)
 
@@ -236,14 +248,14 @@ class DemoView:
             src_file.close()
             des_file.close()
 
-    # Lexicon & Rule
+    # Lexicon & Rules
     def show_lexicon_pane(self):
         if self.setting_window_on:
             self.setting_tabs.select(0)
             self.setting_window.focus_set()
         else:
             self.setting_window_on = True
-            self.make_setting_pad(tab=0)
+            self.make_setting_pad(0)
 
     def show_rule_pane(self):
         if self.setting_window_on:
@@ -251,7 +263,7 @@ class DemoView:
             self.setting_window.focus_set()
         else:
             self.setting_window_on = True
-            self.make_setting_pad(tab=1)
+            self.make_setting_pad(1)
 
     def load_lexicon(self):
         """Load lexicon and show in self.lex_pad"""
@@ -268,22 +280,24 @@ class DemoView:
     def modify_lexicon(self):
         pass
 
-    def load_rule(self):
+    def load_rules(self, menu):
         """
-        If no rules is loaded,it initialize rule variables
-        else,add corresponding checkbutton to self.rule_pad
+        If rules haven't been initialized,it initialize rule variables first.
+        Then add these rules to the menu,and return the menu
         """
         if not self.rule_booleans:
             self.rule_description = self._get_rules()
             for _ in self.rule_description:
-                b = BooleanVar()
+                b = BooleanVar(value=True)
                 self.rule_booleans.append(b)
-                # FIXME: I want to memorize users' setting instead of set all to 0!
+                # FIXME: I want to memorize users' setting instead of set all to 1!
 
-        for r, b in zip(self.rule_description, self.rule_booleans):
-            Checkbutton(self.rule_pad, text=r, variable=b).pack(expand=True, fill=BOTH)
+        for b, d in zip(self.rule_booleans, self.rule_description):
+            menu.add_checkbutton(label=d, variable=b)
 
-        # Help & About
+        return menu
+
+    # Help & About
     def help(self):
         pass
     def about(self):
@@ -316,3 +330,4 @@ class DemoView:
 
     def _set_rules(self):
         self.controller.set_rule_booleans(self.rule_booleans)
+
