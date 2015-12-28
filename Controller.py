@@ -13,29 +13,6 @@ class MainController:
     def run(self):
         self.view.run()
 
-    @staticmethod
-    def read_file(filename: str) -> str:
-        """
-        This function opens a file according to its name,and return its context.
-        If can't open with 'utf-8',try 'gbk',
-        since 'gbk' always opens a file even if open it as error codes
-
-        Questions:
-        1.Error message should not be only print!
-        2.Not tested yet
-        """
-
-        context = ""
-        try:
-            with open(filename, "r", encoding='utf') as f:
-                context = f.read()
-        except IOError:
-            print("Can't find file!")
-        except UnicodeDecodeError:
-            with open(filename, "r", encoding='gbk') as f:
-                context = f.read()
-        return context
-
     def sentence_segment(self, raw: str) -> list:
         """
         This function receive complete long string from View,
