@@ -7,34 +7,11 @@ import kernel
 class MainController:
     """The main controller of app activity"""
     def __init__(self):
-        self.view = View.DemoView(self)
         self.kernel = kernel.Segmentation()
+        self.view = View.DemoView(self)
 
     def run(self):
         self.view.run()
-
-    @staticmethod
-    def read_file(filename: str) -> str:
-        """
-        This function opens a file according to its name,and return its context.
-        If can't open with 'utf-8',try 'gbk',
-        since 'gbk' always opens a file even if open it as error codes
-
-        Questions:
-        1.Error message should not be only print!
-        2.Not tested yet
-        """
-
-        context = ""
-        try:
-            with open(filename, "r", encoding='utf') as f:
-                context = f.read()
-        except IOError:
-            print("Can't find file!")
-        except UnicodeDecodeError:
-            with open(filename, "r", encoding='gbk') as f:
-                context = f.read()
-        return context
 
     def sentence_segment(self, raw: str) -> list:
         """
@@ -57,7 +34,7 @@ class MainController:
     def word_segment(self, sentence: str) -> str:
         """
         This function receive a sentence from View,
-        ask for Model to do word segmentation,
+        ask Model to do word segmentation,
         return processed string to View.
 
         Only called by View.
@@ -70,10 +47,20 @@ class MainController:
         return self.kernel.word_segment(sentence)
 
     def get_lexicon(self) -> list:
-        """Get lexicon from self.kernel"""
+        """
+        Get lexicon from self.kernel
+        According to self.kernel,we get a bi-tuple containing a dict in the of 'XXX':XXX and a dict of 'XXX':['TERM']
+        like ({'姑娘':25686900,...},{'五大三粗':['TERM']...})
+        """
         lex = self.kernel.get_lexicon()
-        print(lex)
-        # return lex
+        return sorted(lex[0].keys())
+
+    def get_term(self) -> list:
+        """
+        Get terms from self.kernel
+        """
+        lex = self.kernel.get_lexicon()
+        return sorted(lex[1].keys())
 
     def get_rule_description(self) -> list:
         """Get rules from self.kernel"""

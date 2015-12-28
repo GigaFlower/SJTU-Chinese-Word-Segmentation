@@ -9,6 +9,7 @@ from kernel import dts_calculate, mi, judge, term_segmentation, special_mark_seg
 
 SPLIT = '|'
 PATH = os.path.split(os.path.realpath(__file__))[0]
+# The path of this file regardless of operating system.
 
 
 class Segmentation:
@@ -275,7 +276,7 @@ class Segmentation:
     def get_rule_description(self):
         des = []
         des.append("Proper noun segmentation")
-        des.append("Double/Single quotation intelligent identify")
+        des.append("Quotation intelligent identify")
         des.append("Particular situation segmentation")
         return des
 
