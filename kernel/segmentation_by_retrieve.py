@@ -1,4 +1,7 @@
 
+class Seg_By_Retrieve:
+    """Segmentation by retrieve"""
+
 class TermSeg:
     """Term segmentation"""
     def __init__(self):

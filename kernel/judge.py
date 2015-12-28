@@ -6,8 +6,8 @@ THETA is the mi valve parameter, when the word's mi is above THETA, it tends to 
 """
 
 DELTA_1 = -2
-DELTA_2 = -1
-DELTA_3 = 0
+DELTA_2 = 0
+DELTA_3 = 2
 KESI_1 = 24
 KESI_2 = 27
 KESI_3 = 30
@@ -275,13 +275,13 @@ class Judge:
         if self.judge_local_max(ind):
             h_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if h_dts > DELTA_1:
-                return "bound"
+                return "bound1"
             else:
                 return "?"
         elif self.judge_local_min(ind):
             d_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if d_dts > KESI_2:
-                return "separated"
+                return "separated2"
             else:
                 return "?"
         else:
@@ -297,13 +297,13 @@ class Judge:
         if self.judge_local_max(ind):
             h_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if h_dts > DELTA_2:
-                return "bound"
+                return "bound2"
             else:
                 return "?"
         elif self.judge_local_min(ind):
             d_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if d_dts > KESI_1:
-                return "separated"
+                return "separated1"
             else:
                 return "?"
         else:
@@ -319,7 +319,7 @@ class Judge:
         if self.judge_local_max(ind):
             h_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if h_dts > DELTA_3:
-                return "bound"
+                return "bound3"
             else:
                 return "?"
         elif self.judge_local_min(ind):
@@ -339,7 +339,7 @@ class Judge:
         elif self.judge_local_min(ind):
             d_dts = self.calculate_height_or_depth_of_local_ext(ind)
             if d_dts > KESI_3:
-                return "separated"
+                return "separated3"
             else:
                 return "?"
         else:
@@ -365,6 +365,8 @@ class Judge:
                         return "right"
                     else:
                         return "?"
+                else:
+                    return "?"
         elif self.judge_left_second_local_max(ind) or self.judge_left_second_local_min(ind):
             lrmin = self.calculate_left_lrmin(ind)
             dis = self.calculate_distance_left_local_ext(ind)

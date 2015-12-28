@@ -5,7 +5,7 @@ Code responsible for service logic
 
 import time
 import os
-from kernel import dts_calculate, mi, judge, term_segmentation, special_mark_segmentation, rule_segmentation
+from kernel import dts_calculate, mi, judge, term_segmentation, special_mark_segmentation, situation_segmentation
 
 SPLIT = '|'
 PATH = os.path.split(os.path.realpath(__file__))[0]
@@ -22,14 +22,14 @@ class Segmentation:
         self.rewr_lexicon = Rewrite_Lexicon()
         self.rewr_lexicon.rewrite_lexicon()
 
-        # Initialize rule
-        self.r = Rule()
-        self.dic_rule = self.r.get_rule()
+        # Initialize particular situation rules
+        self.parti_situ = Parti_situ()
+        self.dic_situ = self.parti_situ.get_parti_situation()
 
         # Particular rule buttons
         self.rule_term = True  # Rule term segmentation
         self.rule_spec_mark = True  # Rule special mark segmentation
-        self.rule_example = True  # Rule particular examples
+        self.rule_situation = True  # Rule particular situation
 
         self.sen_punc_stan = open(os.path.join(PATH, "punctuation_standard_file.txt"), "r",
                              encoding="utf-16")
@@ -37,10 +37,14 @@ class Segmentation:
 
         self.t = term_segmentation.TermSeg()
         self.sp = special_mark_segmentation.Special_mark_seg()
-        self.r_seg = rule_segmentation.RuleSeg()
+        self.situ = situation_segmentation.PartSituSeg()
         self.dts = dts_calculate.Dts()
         self.m = mi.Mi()
         self.j = judge.Judge()
+
+        self.term_VALVE = 7
+        # Term segmentation VALVE: the terms whose probability level is less
+        # than or equal to the VALVE will be recognized and separated.
 
     def sentence_segment(self, raw: str) -> list:
         """
@@ -99,6 +103,7 @@ class Segmentation:
         if self.rule_term:
             self.set_class_property_dic(self.t)
             self.t.mark_list = mark_list
+            self.t.term_VALVE = self.term_VALVE
             string_aft_termseg, mark_list = self.t.retrieve(raw)
         else:
             string_aft_termseg = raw
@@ -107,10 +112,10 @@ class Segmentation:
             self.sp.mark_list = mark_list
             mark_list = self.sp.retrieve(string_aft_termseg)
 
-        if self.rule_example:
-            self.r_seg.mark_list = mark_list
-            self.r_seg.dic_rule = self.dic_rule
-            mark_list = self.r_seg.retrieve(string_aft_termseg)
+        if self.rule_situation:
+            self.situ.mark_list = mark_list
+            self.situ.dic_situ = self.dic_situ
+            mark_list = self.situ.retrieve(string_aft_termseg)
 
         string_aft_sep_punc, mark_list = self.separate_punc(string_aft_termseg, mark_list)
         string = " " + string_aft_sep_punc + " "
@@ -128,9 +133,26 @@ class Segmentation:
                                 mi_mean, mi_standard_derivation,
                                 string_with_mi_list, mark_list)
         mark_list = self.j.get_mark_list()
+        mark_list = self.rewrite_marklist(mark_list)
 
         subs = self.combine(mark_list, raw)
         return subs
+
+    def rewrite_marklist(self, mark_list):
+        """
+        This function will rewrite marklist.
+        It will turn "left" into the mark of its left neighbor and "right" into
+        the mark of its right neighbor.
+        """
+        length = len(mark_list)
+        for num in range(length):
+            if mark_list[num] == "left":
+                mark_list[num] = mark_list[num - 1]
+            elif mark_list[num] == "right":
+                mark_list[num] == mark_list[num + 1]
+            else:
+                pass
+        return mark_list
 
     def combine(self, mark_list, string):
         """
@@ -147,7 +169,7 @@ class Segmentation:
         length = len(string)
         subs = string[0]
         for num in range(length - 1):
-            if mark_list[num] == "separated" or ( mark_list[num] == "right" and mark_list[num + 1] != "" ):
+            if mark_list[num] in ["separated", "separated1", "separated2", "separated3"]:
                 add = SPLIT + string[num + 1]
                 subs += add
             else:
@@ -232,15 +254,23 @@ class Segmentation:
 
         self.j.mark_list = mark_list
 
-    def get_lexicon(self):
+    def get_word_lexicon(self):
         """
         Only called by controller.
-        This function will get the original wordlist and the term lexicon.
-        The wordlist and the term lexicon are both in the dictionary form.
+        This function will get the original wordlist.
+        The wordlist is in the dictionary form.
         """
         dic_orgwd = self.rewr_lexicon.dic_contro_wd
+        return dic_orgwd
+
+    def get_term_lexicon(self):
+        """
+        Only called by controller.
+        This function will get the term lexicon.
+        The term lexicon is in the dictionary form.
+        """
         dic_term = self.lexicon.dic_term
-        return dic_orgwd, dic_term
+        return dic_term
 
     def get_rule_description(self):
         des = []
@@ -256,7 +286,7 @@ class Segmentation:
         """
         self.rule_term = bools[0]  # Rule term segmentation
         self.rule_spec_mark = bools[1]  # Rule special mark segmentation
-        self.rule_example = bools[2]  # Rule particular examples
+        self.rule_situation = bools[2]  # Rule particular situations
 
 class Lexicon:
     def __init__(self):
@@ -365,7 +395,7 @@ class Lexicon:
         whole list consists of many elements which represents a particular word.
         After that, rearrange the list so that three lists are created, including
         the word list, the probability list and the property list.
-        Finally make the dictionary of the words and their properties.
+        Finally make the dictionary of the words and their probability levels.
         """
         list_spilt = self.split_into_list(self.file_term)
         word_list = self.combine(list_spilt)
@@ -374,7 +404,7 @@ class Lexicon:
         length = len(pro)
         new_wd_list = []
         for num in range(length):
-            new_wd_list.append( [wd[num] , pro[num]] )
+            new_wd_list.append( [wd[num] , pb[num]] )
         dic_term = dict(new_wd_list)
         self.file_term.close()
         return dic_term
@@ -421,10 +451,6 @@ class Rewrite_Lexicon:
         "dic_contro_wd" is the dictionary without terms and it will be given to
         controller.
         """
-        self.lex = []
-        ## src = open(filename, "r").read()
-        ## self.lex = src.split()
-
         self.file_word = open(os.path.join(PATH, "wordlist.txt"), "r", encoding="utf-16")
         self.final_word_file = open(os.path.join(PATH, "wordlist_v2.txt"), "r", encoding="utf-16")
         self.term_file = open(os.path.join(PATH, "termlist.txt"), "r", encoding="utf-16")
@@ -554,7 +580,8 @@ class Rewrite_Lexicon:
 
         self.keep_term()
         term_sentence = " ".join(self.term_list)
-        self.term_file = open(os.path.join(PATH, "termlist.txt"), "w+", encoding="utf-16")
+        self.term_file = open(os.path.join(PATH, "termlist.txt"), "w+",
+                                encoding="utf-16")
         self.term_file.write(term_sentence)
         self.term_file.close()
 
@@ -575,17 +602,64 @@ class Rewrite_Lexicon:
         self.sentence_join()
         sentence = " ".join(self.sentence_list)
 
-        self.final_word_file = open(os.path.join(PATH, "wordlist_v2.txt"), "w+", encoding="utf-16")
+        self.final_word_file = open(os.path.join(PATH, "wordlist_v2.txt"), "w+",
+                                 encoding="utf-16")
         self.final_word_file.write(sentence)
         self.final_word_file.close()
 
+    def add_word(self, list_of_word):
+        """
+        Only called by controller.
 
-class Rule:
-    """This class represents a rule library"""
+        This function will add a new word into wordlist through the program.
+
+        The form of the parameter is [word name, probability level (range from 3
+        to 7, 3 is the highest level), properties of the word (two or more
+        properties are allowed)]:
+            For example:
+                list_of_word = ["我们", "3", "N"]
+                or,
+                list_of_word = ["因为", "3", "CONJ", "PREP"]
+        """
+        file_wordlist = open(os.path.join(PATH, "wordlist.txt"), "a",
+                              encoding="utf-16")
+        try:
+            sentence = " ".join(list_of_word)
+        except:
+            sentence = ""
+        sentence = " " + sentence
+        file_wordlist.write(sentence)
+        file_wordlist.close()
+
+    def add_particular_situation(self, list_of_situation):
+        """
+        Only called by controller.
+
+        This function will add a new particular situation into situation lexicon
+        through the program.
+
+        The form of the parameter is [string name, relationships (only contains
+        "bound" and "separated" and they are separated by "," (this comma is in
+        English form) )]:
+            For example:
+                list_of_situation = ["先后来到", "bound,separated,bound"]
+        """
+        file_situation = open(os.path.join(PATH, "particular_situation.txt"),
+                                "a", encoding="utf-16")
+        try:
+            sentence = " ".join(list_of_situation)
+        except:
+            sentence = ""
+        sentence = "\n" + sentence
+        file_situation.write(sentence)
+        file_situation.close()
+
+class Parti_situ:
+    """Particular situation"""
     def __init__(self):
         pass
 
-    def combine_rule(self, list_split):
+    def combine_situ(self, list_split):
         """
         This function will combine the elements of the same word into a list
         in the form of items and relationship.
@@ -617,32 +691,32 @@ class Rule:
         dic=dict( zip(list_a, list_b) )
         return dic
 
-    def get_rule(self):
+    def get_parti_situation(self):
         """
-        NOTE: The comma in the file "rule.txt" MUST be in English form.
+        NOTE: The comma in the file "particular_situation.txt" MUST be in English form.
 
-        This is the main structure of the special rule getting procedure.
+        This is the main structure of the particular situation getting procedure.
 
-        The special rule contains the correct segmentation of some particular
-        examples, which can improve the precision of the whole segmentation to
-        some extent.
+        The particular situation contains the correct segmentation of some
+        particular examples, which can improve the precision of the whole
+        segmentation to some extent.
 
-        The rules are stored in the "rule.txt". The system will first read it
+        The situations are stored in the "particular_situation.txt". The system will first read it
         and split it into scores of lists. Then the list will be turned into a
         dictionary, which will be used in the segmentation part.
         """
-        file_rule = open(os.path.join(PATH, "rule.txt"), "r", encoding="utf-16")
-        rule_string = file_rule.read()
-        rule_list = rule_string.split()
-        items, relationship = self.combine_rule(rule_list)
+        file_parti_situ = open(os.path.join(PATH, "particular_situation.txt"), "r", encoding="utf-16")
+        situ_string = file_parti_situ.read()
+        situ_list = situ_string.split()
+        items, relationship = self.combine_situ(situ_list)
         relationship_in_list = self.rela_to_list(relationship)
-        dic_rule = self.dictionary(items, relationship_in_list)
-        return dic_rule
+        dic_situ = self.dictionary(items, relationship_in_list)
+        return dic_situ
 
 if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("评议会上，主办单位对征集到的优秀志愿者歌曲进行了集中展示。"))
+    print(s.word_segment("我们二氧化钛的副主任牛有成上海交通大学强调。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
