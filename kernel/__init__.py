@@ -15,13 +15,13 @@ PATH = os.path.split(os.path.realpath(__file__))[0]
 class Segmentation:
     """This class handles all staff relating to segmentation"""
     def __init__(self):
-        # Initialize lexicon
-        self.lexicon = Lexicon()
-        self.lexicon.set_dictionary()
-
         # Initialize lexicon rewriting system.
         self.rewr_lexicon = Rewrite_Lexicon()
         self.rewr_lexicon.rewrite_lexicon()
+
+        # Initialize lexicon
+        self.lexicon = Lexicon()
+        self.lexicon.set_dictionary()
 
         # Initialize particular situation rules
         self.parti_situ = Parti_situ()
@@ -200,34 +200,38 @@ class Segmentation:
         punc = punc_file.read()
         subs = ""
         length = len(string)
-        for num in range(length):
-            if string[num] not in punc:
-                subs += string[num]
-            else:
-                subs += " "
-                # If the relationship of the punctuations with their neighbors
-                # are not set before, label their relationships with "separated".
-                if num == 0 and mark_list[num] == 0:
-                    # If it is the first character, only separate it with its
-                    # right neighbor.
-                    mark_list[num] = "separated"
-                elif num == length - 1 and mark_list[num - 1] == 0:
-                    # If it is the last character, only separate it with its
-                    # left neighbor.
-                    mark_list[num - 1] = "separated"
-                elif 0 < num < length - 1:
-                    # If it is the middle character, separate it with its both
-                    # neighbors.
-                    if mark_list[num - 1] == 0:
-                        mark_list[num - 1] = "separated"
-                    else:
-                        pass
-                    if mark_list[num] == 0:
-                        mark_list[num] = "separated"
-                    else:
-                        pass
+        if length == 1:
+            pass
+        else:
+            for num in range(length):
+                if string[num] not in punc:
+                    subs += string[num]
                 else:
-                    pass
+                    subs += " "
+                    # If the relationship of the punctuations with their
+                    # neighbors are not set before, label their relationships
+                    # with "separated".
+                    if num == 0 and mark_list[num] == 0:
+                        # If it is the first character, only separate it with its
+                        # right neighbor.
+                        mark_list[num] = "separated"
+                    elif num == length - 1 and mark_list[num - 1] == 0:
+                        # If it is the last character, only separate it with its
+                        # left neighbor.
+                        mark_list[num - 1] = "separated"
+                    elif 0 < num < length - 1:
+                        # If it is the middle character, separate it with its
+                        # both neighbors.
+                        if mark_list[num - 1] == 0:
+                            mark_list[num - 1] = "separated"
+                        else:
+                            pass
+                        if mark_list[num] == 0:
+                            mark_list[num] = "separated"
+                        else:
+                            pass
+                    else:
+                        pass
         punc_file.close()
         return subs, mark_list
 
@@ -700,7 +704,8 @@ class Parti_situ:
 
     def get_parti_situation(self):
         """
-        NOTE: The comma in the file "particular_situation.txt" MUST be in English form.
+        NOTE: The comma in the file "particular_situation.txt" MUST be in
+        English form.
 
         This is the main structure of the particular situation getting procedure.
 
@@ -708,11 +713,12 @@ class Parti_situ:
         particular examples, which can improve the precision of the whole
         segmentation to some extent.
 
-        The situations are stored in the "particular_situation.txt". The system will first read it
-        and split it into scores of lists. Then the list will be turned into a
-        dictionary, which will be used in the segmentation part.
+        The situations are stored in the "particular_situation.txt". The system
+        will first read it and split it into scores of lists. Then the list will
+        be turned into a dictionary, which will be used in the segmentation part.
         """
-        file_parti_situ = open(os.path.join(PATH, "particular_situation.txt"), "r", encoding="utf-16")
+        file_parti_situ = open(os.path.join(PATH, "particular_situation.txt"),
+                                             "r", encoding="utf-16")
         situ_string = file_parti_situ.read()
         situ_list = situ_string.split()
         items, relationship = self.combine_situ(situ_list)
@@ -724,6 +730,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("法国网球公开赛今天在巴黎西郊拉开战幕"))
+    print(s.word_segment("要在中国开连锁店老瓦告诉记者，他退役后并没有在瑞典国内任职，而是在德国一家俱乐部教球，同时在北京开了一家叫“维京锐点”的餐厅兼酒吧，北京奥运会结束后，我还会在中国接着开些连锁店呢。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))

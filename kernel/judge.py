@@ -5,13 +5,13 @@ KESI_1, KESI_2, KESI_3 are the "separated" condition parameter, which have the r
 THETA is the mi valve parameter, when the word's mi is above THETA, it tends to be bound and vice versa.
 """
 
-DELTA_1 = 6
-DELTA_2 = 8
-DELTA_3 = 10
+DELTA_1 = 24
+DELTA_2 = 32
+DELTA_3 = 40
 KESI_1 = 24
-KESI_2 = 27
-KESI_3 = 30
-THETA = 3
+KESI_2 = 32
+KESI_3 = 40
+THETA = 3.5
 
 
 class Judge:
@@ -423,7 +423,7 @@ class Judge:
                 elif B and b:  # Case: Bb
                     self.mark_list[ind] = self.case_Bb(ind)
                 else:       # Other cases
-                    self.mark_list[ind] = "?"
+                    self.mark_list[ind] = "None"
             else:
                 pass
 
@@ -436,7 +436,7 @@ class Judge:
         """
         length = len(self.dts_list)
         for num in range(length):
-            if self.mark_list[num] == "?":
+            if self.mark_list[num] == "None":
                 self.mark_list[num] = self.case_second_round(num)
 
     def third_round(self):
