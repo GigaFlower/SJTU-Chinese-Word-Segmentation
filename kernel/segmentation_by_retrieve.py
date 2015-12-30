@@ -127,7 +127,7 @@ class Seg_By_Retrieve:
         """
         This function will retrieve the whole string from left to right to
         search whether the string contains the quotation marks and book marks,
-         which will be handled by some further judgements.
+        which will be handled by some further judgments.
         """
         if self.rule_spec_mark:
             length = len(string)

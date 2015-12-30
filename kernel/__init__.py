@@ -270,6 +270,15 @@ class Segmentation:
         dic_term = self.lexicon.dic_term
         return dic_term
 
+    def get_situ(self):
+        """
+        Only called by controller.
+        This function will get the particular situation lexicon.
+        The particular situation lexicon is in the dictionary form.
+        """
+        dic_situ = self.dic_situ
+        return dic_situ
+
     def get_rule_description(self):
         des = []
         des.append("Proper noun segmentation")
@@ -715,6 +724,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("二氧化钛是我的房间抗裂砂浆"))
+    print(s.word_segment("公园日常工作的每一个细节都要坚持以人为本的理念"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))

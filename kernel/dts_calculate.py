@@ -84,23 +84,12 @@ class Dts:
                     # if the word's two characters are both number characters,
                     # they tend to be bound.
                     p = max( p + 3000000 , 2 * p )
-                elif x[0] in self.number_string and x[1] not in self.number_separate_string:
-                    # if the word's first character is number character, and the
-                    # second character is not the one which tends to be
-                    # separated when following the number character, it will
-                    # return a big number which means they tend to be bound.
-                    p = max( p + 300000 , 1.5 * p )
                 else:
-                    # if the word's first character is number character, but the
-                    # second character is in the one which tends to be separated
-                    # when following the number character, nothing will happen.
                     pass
             else:
                 p = 5
                 if x[0] in self.number_string and x[1] in self.number_string:
                     p = 3000000
-                elif x[0] in self.number_string and x[1] not in self.number_separate_string:
-                    p = 300000
                 else:
                     pass
             return int(p)

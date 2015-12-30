@@ -5,9 +5,9 @@ KESI_1, KESI_2, KESI_3 are the "separated" condition parameter, which have the r
 THETA is the mi valve parameter, when the word's mi is above THETA, it tends to be bound and vice versa.
 """
 
-DELTA_1 = -2
-DELTA_2 = 0
-DELTA_3 = 2
+DELTA_1 = 6
+DELTA_2 = 8
+DELTA_3 = 10
 KESI_1 = 24
 KESI_2 = 27
 KESI_3 = 30
@@ -391,10 +391,10 @@ class Judge:
             if self.mark_list[ind] == 0:
                 current_dts = self.dts_list[ind]
                 current_mi = self.mi_list[ind]
-                A = current_dts > self.dts_standard_derivation
-                B = 0 < current_dts <= self.dts_standard_derivation
-                C = -self.dts_standard_derivation < current_dts <= 0
-                D = current_dts <= -self.dts_standard_derivation
+                A = current_dts > self.dts_standard_derivation + self.dts_mean
+                B = self.dts_mean < current_dts <= self.dts_standard_derivation + self.dts_mean
+                C = -self.dts_standard_derivation + self.dts_mean < current_dts <= self.dts_mean
+                D = current_dts <= self.dts_mean - self.dts_standard_derivation
                 a = current_mi > self.mi_mean + self.mi_standard_derivation
                 b = self.mi_mean < current_mi <= self.mi_mean + self.mi_standard_derivation
                 c = self.mi_mean -self. mi_standard_derivation < current_mi <= self.mi_mean
