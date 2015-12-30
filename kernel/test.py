@@ -131,4 +131,4 @@ def test(start=0, amount=20):
 
 if __name__ == '__main__':
 
-    test(800, 100)
+    test(600, 300)

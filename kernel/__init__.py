@@ -724,6 +724,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("公园日常工作的每一个细节都要坚持以人为本的理念"))
+    print(s.word_segment("法国网球公开赛今天在巴黎西郊拉开战幕"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))

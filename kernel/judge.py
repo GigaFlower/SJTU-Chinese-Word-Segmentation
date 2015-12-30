@@ -11,7 +11,7 @@ DELTA_3 = 10
 KESI_1 = 24
 KESI_2 = 27
 KESI_3 = 30
-THETA = 2.5
+THETA = 3
 
 
 class Judge:
@@ -352,22 +352,33 @@ class Judge:
         If the current element is the second local extremum, compare its
         distance with its lrmin value.
         """
-        if self.judge_right_second_local_max(ind) or self.judge_right_second_local_min(ind):
-            lrmin = self.calculate_right_lrmin(ind)
+        if (self.judge_right_second_local_max(ind) or self.judge_right_second_local_min(ind)) and (self.judge_left_second_local_max(ind) or self.judge_left_second_local_min(ind)):
+            lrmin_r = self.calculate_right_lrmin(ind)
+            lrmin_l = self.calculate_left_lrmin(ind)
+            dis_r = self.calculate_distance_right_local_ext(ind)
+            dis_l = self.calculate_distance_left_local_ext(ind)
+            if dis_l > dis_r:
+                dis = dis_l
+                lrmin = lrmin_l
+                if dis < 0.5 * lrmin:
+                    return "right"
+                else:
+                    return "?"
+            else:
+                dis = dis_r
+                lrmin = lrmin_r
+                if dis < 0.5 * lrmin:
+                    return "left"
+                else:
+                    return "?"
+        elif (self.judge_right_second_local_max(ind) or self.judge_right_second_local_min(ind)) and not (self.judge_left_second_local_max(ind) or self.judge_left_second_local_min(ind)):
             dis = self.calculate_distance_right_local_ext(ind)
+            lrmin = self.calculate_right_lrmin(ind)
             if dis < 0.5 * lrmin:
                 return "left"
             else:
-                if self.judge_left_second_local_max(ind) or self.judge_left_second_local_min(ind):
-                    lrmin = self.calculate_left_lrmin(ind)
-                    dis = self.calculate_distance_left_local_ext(ind)
-                    if dis < 0.5 * lrmin:
-                        return "right"
-                    else:
-                        return "?"
-                else:
-                    return "?"
-        elif self.judge_left_second_local_max(ind) or self.judge_left_second_local_min(ind):
+                return "?"
+        elif not (self.judge_right_second_local_max(ind) or self.judge_right_second_local_min(ind)) and (self.judge_left_second_local_max(ind) or self.judge_left_second_local_min(ind)):
             lrmin = self.calculate_left_lrmin(ind)
             dis = self.calculate_distance_left_local_ext(ind)
             if dis < 0.5 * lrmin:
