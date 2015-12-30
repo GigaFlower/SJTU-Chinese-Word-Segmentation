@@ -73,7 +73,7 @@ class DemoView:
         data_menu = Menu(main_menu)
         data_menu.add_command(label="Lexicon", command=self.show_lexicon_pane)
         rule_menu = Menu(data_menu)
-        rule_menu = self.load_rules(rule_menu)
+        rule_menu = self.load_rule_options(rule_menu)
         rule_menu.add_separator()
         rule_menu.add_command(label="Edit", command=self.show_rule_pane)
         data_menu.add_cascade(label="Rules", menu=rule_menu)
@@ -110,7 +110,7 @@ class DemoView:
         """Make setting_pad which is to be triggered from clicking at 'Lexicon' or 'Rule' in menu"""
         self.setting_window = Toplevel()
         self.setting_window.minsize(400, 200)
-        self.setting_window.resizable = False
+        self.setting_window.resizable(False, False)
 
         # Override window delete function
         def delete_setting_window():
@@ -124,37 +124,50 @@ class DemoView:
 
         # Make lexicon_tab
         lexicon_tab = Frame(self.setting_tabs)
-        self.lexi_pad = Listbox(lexicon_tab)
-        scrollbar = Scrollbar(lexicon_tab)
-        scrollbar.configure(command=self.lexi_pad.yview)
-        self.lexi_pad.configure(yscrollcommand=scrollbar.set)
+        self.lexi_pad = Listbox(lexicon_tab, selectmode=EXTENDED)
         self.lexi_pad.pack(side=LEFT, fill=Y)
-        scrollbar.pack(side=LEFT, fill=Y)
+        self.add_scrollbar(self.lexi_pad)
 
         Button(lexicon_tab, text='Load', width=7, command=self.load_lexicon).pack(expand=True)
-        Button(lexicon_tab, text='Add', width=7, command=self.add_lexicon).pack(expand=True)
-        Button(lexicon_tab, text='Search', width=7, command=self.find_lexicon).pack(expand=True)
+        Button(lexicon_tab, text='Add', width=7, command=lambda: self.listbox_add(self.lexi_pad)).pack(expand=True)
+        Button(lexicon_tab, text='Search', width=7, command=lambda: self.listbox_find(self.lexi_pad)).pack(expand=True)
+        Button(lexicon_tab, text='Delete', width=7, command=lambda: self.listbox_delete(self.lexi_pad)).pack(expand=True)
 
-        Button(lexicon_tab, text='Delete', width=7, command=self.delete_lexicon).pack(expand=True)
-        Button(lexicon_tab, text='Modify', width=7, command=self.modify_lexicon).pack(expand=True, padx=5)
+        # Make term_tab
+        # FIXME:This part is almost same as 'make lexicon_tab' above!Combine them!
+        term_tab = Frame(self.setting_tabs)
+        self.term_pad = Listbox(term_tab, selectmode=EXTENDED)
+        self.term_pad.pack(side=LEFT, fill=Y)
+        self.add_scrollbar(self.term_pad)
 
-        # Make rule_tab
-        rule_tab = Frame(self.setting_tabs)
-        Label(rule_tab, text="Term:").grid(row=0, column=0)
-        Label(rule_tab, text="Particular situation:").grid(row=0, column=1)
+        Button(term_tab, text='Load', width=7, command=self.load_term).pack(expand=True)
+        Button(term_tab, text='Add', width=7, command=lambda: self.listbox_add(self.term_pad)).pack(expand=True)
+        Button(term_tab, text='Search', width=7, command=lambda: self.listbox_find(self.term_pad)).pack(expand=True)
+        Button(term_tab, text='Delete', width=7, command=lambda: self.listbox_delete(self.term_pad)).pack(expand=True)
 
-        self.term_pad = Listbox(rule_tab)
-        self.term_pad.grid(row=1, column=0)
-        self.load_term()
-        self.situ_pad = Listbox(rule_tab)
-        self.situ_pad.grid(row=1, column=1)
-        self.load_situ()
+        # Make situ_tab
+        situ_tab = Frame(self.setting_tabs)
+        self.situ_pad = Listbox(situ_tab, selectmode=EXTENDED)
+        self.situ_pad.pack(side=LEFT, fill=Y)
+        self.add_scrollbar(self.situ_pad)
+
+        Button(situ_tab, text='Load', width=7, command=self.load_situ).pack(expand=True)
+        Button(situ_tab, text='Add', width=7, command=lambda: self.listbox_add(self.situ_pad)).pack(expand=True)
+        Button(situ_tab, text='Delete', width=7, command=lambda: self.listbox_delete(self.situ_pad)).pack(expand=True)
 
         #
         self.setting_tabs.add(lexicon_tab, text="Lexicon")
-        self.setting_tabs.add(rule_tab, text="Rules")
+        self.setting_tabs.add(term_tab, text="Terms")
+        self.setting_tabs.add(situ_tab, text="Rules")
         self.setting_tabs.select(tab)
         self.setting_tabs.pack(expand=True, fill=BOTH)
+
+    @staticmethod
+    def add_scrollbar(obj):
+        scrollbar = Scrollbar(obj.master)
+        scrollbar.configure(command=obj.yview)
+        obj.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side=LEFT, fill=Y)
 
     # Menu functions
     # ----------------------------------------------------------
@@ -253,59 +266,7 @@ class DemoView:
             des_file.close()
 
     # Lexicon & Rules
-    def show_lexicon_pane(self):
-        if self.setting_window_on:
-            self.setting_tabs.select(0)
-            self.setting_window.focus_set()
-        else:
-            self.setting_window_on = True
-            self.make_setting_pad(0)
-
-    def show_rule_pane(self):
-        if self.setting_window_on:
-            self.setting_tabs.select(1)
-            self.setting_window.focus_set()
-        else:
-            self.setting_window_on = True
-            self.make_setting_pad(1)
-
-    def load_lexicon(self):
-        """Load lexicon and show in self.lex_pad"""
-        lex = self._get_lex()
-        for l in lex:
-            self.lexi_pad.insert(END, l)
-
-    def add_lexicon(self):
-        pass
-
-    def find_lexicon(self):
-        find_lex = Toplevel(self.root)
-        find_lex.title("Find")
-        find_lex.transient(self.lexi_pad)
-
-        Label(find_lex, text="Find:")
-        target = StringVar()
-        Entry(find_lex, textvariable=target).pack(padx=4, pady=4)
-
-        def find(string):
-            lex = self.lexi_pad.get(0, END)
-            try:
-                ind = lex.index(string)
-            except ValueError:
-                messagebox.showerror("No such word!")
-            else:
-                self.lexi_pad.select_clear(0, END)
-                self.lexi_pad.select_set(ind)
-                self.lexi_pad.see(lex.index(string))
-
-        Button(find_lex, text="Go!", command=lambda: find(target.get())).pack(padx=4, pady=4)
-
-    def delete_lexicon(self):
-        pass
-    def modify_lexicon(self):
-        pass
-
-    def load_rules(self, menu):
+    def load_rule_options(self, menu):
         """
         If rules haven't been initialized,it initialize rule variables first.
         Then add these rules to the menu,and return the menu
@@ -322,11 +283,91 @@ class DemoView:
 
         return menu
 
+    def show_lexicon_pane(self):
+        if self.setting_window_on:
+            self.setting_tabs.select(0)
+            self.setting_window.focus_set()
+        else:
+            self.setting_window_on = True
+            self.make_setting_pad(0)
+
+    def show_rule_pane(self):
+        if self.setting_window_on:
+            self.setting_tabs.select(1)
+            self.setting_window.focus_set()
+        else:
+            self.setting_window_on = True
+            self.make_setting_pad(1)
+            self.load_situ()
+            self.load_term()
+
+    def load_lexicon(self):
+        """Load lexicon and show in self.lex_pad"""
+        lex = self._get_lex()
+        for l in lex:
+            self.lexi_pad.insert(END, l)
+
+    def listbox_find(self, master: Listbox):
+        """This function make a find window for a listbox"""
+        find_window = Toplevel(self.root)
+        find_window.title("Find")
+        find_window.transient(master)
+
+        Label(find_window, text="Find:")
+        e = Entry(find_window)
+        e.pack(padx=4, pady=4)
+
+        def find():
+            lex = master.get(0, END)
+            target = e.get()
+            try:
+                ind = lex.index(target)
+            except ValueError:
+                messagebox.showerror(message="No such word!")
+            else:
+                master.select_clear(0, END)
+                master.select_set(ind)
+                master.see(ind)
+
+        Button(find_window, text="Go!", command=find).pack(padx=4, pady=4)
+
+    def listbox_add(self, master: Listbox):
+        """This function make a add_item window for a listbox"""
+        add_window = Toplevel(self.root)
+        add_window.title("Add")
+        add_window.transient(master)
+
+        Label(add_window, text="Add:")
+        target = StringVar()
+        e = Entry(add_window, textvariable=target)
+        e.pack(padx=4, pady=4)
+
+        def add():
+            item = e.get()
+            if item in master.get(0, END):
+                messagebox.showerror(message="This word already exists!")
+            elif item.strip():
+                master.insert(END, item)
+                master.select_clear(0, END)
+                master.select_set(END)
+                master.see(END)
+
+        Button(add_window, text="Add!", command=add).pack(padx=4, pady=4)
+
+    def listbox_delete(self, master: Listbox):
+        """This function delete a item for a listbox"""
+        targets = master.curselection()
+        if len(targets) == 1:
+            master.delete(targets[0])
+        elif len(targets) >= 2:
+            messagebox.showerror(message="Too much items selected!\nDelete one item at once!")
+
     def load_term(self):
         """Load term and show in self.term_pad"""
         lex = self._get_term()
         for l in lex:
             self.term_pad.insert(END, l)
+
 
     def load_situ(self):
         """Load term and show in self.situ_pad"""
@@ -334,6 +375,7 @@ class DemoView:
         lex = self._get_situ()
         for l in lex:
             self.situ_pad.insert(END, l)
+
 
     # Help & About
     def help(self):
