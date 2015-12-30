@@ -24,7 +24,8 @@ class DemoView:
         self.setting_tabs = ttk.Notebook()
 
         self.lexi_pad = Listbox()
-        # No self.rule_pad because rules don't need lazy load.
+        self.term_pad = Listbox()
+        self.situ_pad = Listbox()
 
         self.rule_booleans = []
         self.rule_description = []
@@ -139,12 +140,15 @@ class DemoView:
 
         # Make rule_tab
         rule_tab = Frame(self.setting_tabs)
-        Label(rule_tab, text="Particular situation:").grid(row=0, column=0)
-        Label(rule_tab, text="Proper nouns:").grid(row=0, column=1)
-        rule_pad_A = Listbox(rule_tab)
-        rule_pad_A.grid(row=1, column=0)
-        rule_pad_B = Listbox(rule_tab)
-        rule_pad_B.grid(row=1, column=1)
+        Label(rule_tab, text="Term:").grid(row=0, column=0)
+        Label(rule_tab, text="Particular situation:").grid(row=0, column=1)
+
+        self.term_pad = Listbox(rule_tab)
+        self.term_pad.grid(row=1, column=0)
+        self.load_term()
+        self.situ_pad = Listbox(rule_tab)
+        self.situ_pad.grid(row=1, column=1)
+        self.load_situ()
 
         #
         self.setting_tabs.add(lexicon_tab, text="Lexicon")
@@ -267,7 +271,7 @@ class DemoView:
 
     def load_lexicon(self):
         """Load lexicon and show in self.lex_pad"""
-        lex = self._get_lexicon()
+        lex = self._get_lex()
         for l in lex:
             self.lexi_pad.insert(END, l)
 
@@ -318,6 +322,19 @@ class DemoView:
 
         return menu
 
+    def load_term(self):
+        """Load term and show in self.term_pad"""
+        lex = self._get_term()
+        for l in lex:
+            self.term_pad.insert(END, l)
+
+    def load_situ(self):
+        """Load term and show in self.situ_pad"""
+        # FIXME: There are three almost same function load_lex/term/situ,combine them!
+        lex = self._get_situ()
+        for l in lex:
+            self.situ_pad.insert(END, l)
+
     # Help & About
     def help(self):
         pass
@@ -343,7 +360,7 @@ class DemoView:
     def _wrd_seg(self, raw: str) -> str:
         return self.controller.word_segment(raw)
 
-    def _get_lexicon(self) -> list:
+    def _get_lex(self) -> list:
         return self.controller.get_lexicon()
 
     def _get_rules(self) -> list:
@@ -351,3 +368,9 @@ class DemoView:
 
     def _set_rules(self):
         self.controller.set_rule_booleans(self.rule_booleans)
+
+    def _get_term(self) -> list:
+        return self.controller.get_term()
+
+    def _get_situ(self) -> list:
+        return self.controller.get_particular_situation()

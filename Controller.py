@@ -49,8 +49,8 @@ class MainController:
     def get_lexicon(self) -> list:
         """
         Get lexicon from self.kernel
-        According to self.kernel,we get a bi-tuple containing a dict in the of 'XXX':XXX and a dict of 'XXX':['TERM']
-        like ({'姑娘':25686900,...},{'五大三粗':['TERM']...})
+        like {'姑娘':25686900,...}
+        (it should be a really big one)
         """
         lex = self.kernel.get_word_lexicon()
         return sorted(lex.keys())
@@ -58,9 +58,32 @@ class MainController:
     def get_term(self) -> list:
         """
         Get terms from self.kernel
+        like {'中华人民共和国':['TERM']}
         """
         lex = self.kernel.get_term_lexicon()
         return sorted(lex.keys())
+
+    def get_particular_situation(self) -> list:
+        """
+        Get particular situation description from self.kernel
+        like {'先后来到':['bound','separated','bound']}
+        denoting how this particular word should be segmented
+        After format into '先后来到\t->\t先后|来到',
+        return to view.
+        """
+        sit = self.kernel.get_situ()
+        ret = []
+        for k, v in sorted(sit.items()):
+            assert(len(k) == len(v)+1)
+            raw = k
+            after_format = k[0]
+            for ind in range(len(v)):
+                if v[ind] == 'separated':
+                    after_format += '|'
+                after_format += k[ind+1]
+            ret.append("%s\t->\t%s" % (raw, after_format))
+
+        return ret
 
     def get_rule_description(self) -> list:
         """Get rules from self.kernel"""
