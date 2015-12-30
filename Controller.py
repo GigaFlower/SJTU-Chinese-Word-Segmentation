@@ -52,15 +52,15 @@ class MainController:
         According to self.kernel,we get a bi-tuple containing a dict in the of 'XXX':XXX and a dict of 'XXX':['TERM']
         like ({'姑娘':25686900,...},{'五大三粗':['TERM']...})
         """
-        lex = self.kernel.get_lexicon()
-        return sorted(lex[0].keys())
+        lex = self.kernel.get_word_lexicon()
+        return sorted(lex.keys())
 
     def get_term(self) -> list:
         """
         Get terms from self.kernel
         """
-        lex = self.kernel.get_lexicon()
-        return sorted(lex[1].keys())
+        lex = self.kernel.get_term_lexicon()
+        return sorted(lex.keys())
 
     def get_rule_description(self) -> list:
         """Get rules from self.kernel"""
