@@ -130,4 +130,5 @@ def test(start=0, amount=20):
     output.close()
 
 if __name__ == '__main__':
+
     test(800, 100)
