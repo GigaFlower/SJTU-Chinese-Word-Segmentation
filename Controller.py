@@ -1,6 +1,6 @@
 """Code responsible for application logic"""
 
-import View
+import view
 import kernel
 
 
@@ -8,7 +8,7 @@ class MainController:
     """The main controller of app activity"""
     def __init__(self):
         self.kernel = kernel.Segmentation()
-        self.view = View.DemoView(self)
+        self.view = view.DemoView(self)
 
     def run(self):
         self.view.run()
@@ -18,8 +18,6 @@ class MainController:
         This function receive complete long string from View,
         ask for Model to do sentence segmentation,
         return processed string list to View.
-
-        Only called by View.
 
         Examples:
         >>> c = MainController()
@@ -37,8 +35,6 @@ class MainController:
         ask Model to do word segmentation,
         return processed string to View.
 
-        Only called by View.
-
         Examples:
         >>> c = MainController()
         >>> c.word_segment("我喜欢足球")
@@ -50,7 +46,7 @@ class MainController:
         """
         Get lexicon from self.kernel
         like {'姑娘':25686900,...}
-        (it should be a really big one)
+        (it should be a really big dictionary)
         """
         lex = self.kernel.get_word_lexicon()
         return sorted(lex.keys())
@@ -58,7 +54,7 @@ class MainController:
     def get_term(self) -> list:
         """
         Get terms from self.kernel
-        like {'中华人民共和国':['TERM']}
+        like {'中华人民共和国':['TERM'],...}
         """
         lex = self.kernel.get_term_lexicon()
         return sorted(lex.keys())

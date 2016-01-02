@@ -1,6 +1,6 @@
 """The main function"""
-import Controller
+import controller
 
 if __name__ == '__main__':
-    c = Controller.MainController()
+    c = controller.MainController()
     c.run()

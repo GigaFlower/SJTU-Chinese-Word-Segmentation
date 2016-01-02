@@ -368,7 +368,6 @@ class DemoView:
         for l in lex:
             self.term_pad.insert(END, l)
 
-
     def load_situ(self):
         """Load term and show in self.situ_pad"""
         # FIXME: There are three almost same function load_lex/term/situ,combine them!

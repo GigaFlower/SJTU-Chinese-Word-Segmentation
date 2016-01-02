@@ -36,7 +36,7 @@ class Segmentation:
                              encoding="utf-16")
         # "sen_punc_stan" contains sentence segment punctuations.
 
-        self.r = segmentation_by_retrieve.Seg_By_Retrieve()
+        self.r = segmentation_by_retrieve.RetrieveSeg()
         self.dts = dts_calculate.Dts()
         self.m = mi.Mi()
         self.j = judge.Judge()
@@ -125,7 +125,7 @@ class Segmentation:
 
     def set_retrieve_class_property(self, mark_list):
         """
-        Set the properties of the class Seg_By_Retrieve in
+        Set the properties of the class RetrieveSeg in
         segmentation_by_retrieve.
         """
         self.r.mark_list = mark_list

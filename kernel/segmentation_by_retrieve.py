@@ -9,7 +9,8 @@ SEN_MARK = '，。？！……；'
 # it means the string between the quotation marks is regarded to be a sentence
 # rather than a word.
 
-class Seg_By_Retrieve:
+
+class RetrieveSeg:
     """Segmentation by retrieve"""
     def __init__(self):
         """
