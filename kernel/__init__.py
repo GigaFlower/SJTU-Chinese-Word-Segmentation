@@ -313,7 +313,7 @@ class Lexicon:
         "dic_term" is the dictionary with words marked with "TERM".
         """
         self.file_word = open(os.path.join(PATH, "wordlist_v2.txt"), "r", encoding="utf-16")
-        self.file_term = open(os.path.join(PATH, "termlist.txt"), "r", encoding="utf-16")
+        self.file_term = open(os.path.join(PATH, "term_list.txt"), "r", encoding="utf-16")
         self.file_character = open(os.path.join(PATH, "characterlist.txt"), "r", encoding="utf-16")
         self.dic_pb = {}
         self.dic_cha = {}
@@ -464,7 +464,7 @@ class Rewrite_Lexicon:
         """
         self.file_word = open(os.path.join(PATH, "wordlist.txt"), "r", encoding="utf-16")
         self.final_word_file = open(os.path.join(PATH, "wordlist_v2.txt"), "r", encoding="utf-16")
-        self.term_file = open(os.path.join(PATH, "termlist.txt"), "r", encoding="utf-16")
+        self.term_file = open(os.path.join(PATH, "term_list.txt"), "r", encoding="utf-16")
         self.word_list = []
         self.term_list = []
         self.sentence_list = []
@@ -591,7 +591,7 @@ class Rewrite_Lexicon:
 
         self.keep_term()
         term_sentence = " ".join(self.term_list)
-        self.term_file = open(os.path.join(PATH, "termlist.txt"), "w+",
+        self.term_file = open(os.path.join(PATH, "term_list.txt"), "w+",
                                 encoding="utf-16")
         self.term_file.write(term_sentence)
         self.term_file.close()
