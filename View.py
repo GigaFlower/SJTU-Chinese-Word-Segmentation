@@ -5,12 +5,12 @@ from tkinter import filedialog
 import tkinter.ttk as ttk
 
 
-class DemoView:
+class View:
     def __init__(self, controller):
         self.controller = controller
         # Root window
         self.root = Tk()
-        self.root.title("Y")
+        self.root.title("Chinese Segmentation Prototype System")
 
         # Three main text pads
         # Only remind coder that there exist these properties
@@ -19,21 +19,26 @@ class DemoView:
         self.sen_text_pad = Listbox()
         self.wrd_text_pad = Text()
 
+        # The window of setting configuration
         self.setting_window = ttk.Notebook()
         self.setting_window_on = False
         self.setting_tabs = ttk.Notebook()
 
+        # Three pad in the setting window
         self.lexi_pad = Listbox()
         self.term_pad = Listbox()
         self.situ_pad = Listbox()
 
+        # Rule variables
         self.rule_booleans = []
         self.rule_description = []
 
-        self.make_text_pad()
-        self.make_menu()
+        # File variables
+        self.file_name = ""
 
     def run(self):
+        self.make_text_pad()
+        self.make_menu()
         self.root.mainloop()
 
     def make_menu(self):
@@ -41,25 +46,37 @@ class DemoView:
 
         # file_menu
         file_menu = Menu(main_menu)
-        file_menu.add_command(label="New", accelerator="Ctrl+N")
-        file_menu.add_command(label="Open", accelerator="Ctrl+O")
+        file_menu.add_command(label="New", accelerator="Ctrl+N", command=self.new)
+        file_menu.add_command(label="Open", accelerator="Ctrl+O", command=self.open)
         file_menu.add_command(label="Open Recent")
         file_menu.add_separator()
-        file_menu.add_command(label="Save", accelerator="Ctrl+S")
-        file_menu.add_command(label="Save As")
+        file_menu.add_command(label="Save", accelerator="Ctrl+S", command=self.save)
+        file_menu.add_command(label="Save As", accelerator="Shift+Ctrl+S", command=self.save_as)
         file_menu.add_separator()
-        file_menu.add_command(label="Export")
-        file_menu.add_command(label="Exit", accelerator="Ctrl+Q")
+        file_menu.add_command(label="Export", command=self.export)
+        file_menu.add_command(label="Exit", accelerator="Ctrl+Q", command=self.exit)
+
+        self.root.bind('<Control-N>', self.new)
+        self.root.bind('<Control-O>', self.open)
+        self.root.bind('<Control-S>', self.save)
+        self.root.bind('<Shift-Control-S>', self.save_as)
+        self.root.bind('<Control-Q>', self.exit)
 
         # edit_menu
         edit_menu = Menu(main_menu)
-        edit_menu.add_command(label="Undo", accelerator="Ctrl+Z")
-        edit_menu.add_command(label="Redo", accelerator="Shift+Ctrl+Z")
+        edit_menu.add_command(label="Undo", accelerator="Ctrl+Z", command=self.undo)
+        edit_menu.add_command(label="Redo", accelerator="Shift+Ctrl+Z", command=self.redo)
         edit_menu.add_separator()
-        edit_menu.add_command(label="Cut", accelerator="Ctrl+X")
-        edit_menu.add_command(label="Copy", accelerator="Ctrl+C")
-        edit_menu.add_command(label="Paste", accelerator="Ctrl+V")
-        edit_menu.add_command(label="Find_All", accelerator="Ctrl+F", command=self.find_all)
+        edit_menu.add_command(label="Cut", accelerator="Ctrl+X", command=self.cut)
+        edit_menu.add_command(label="Copy", accelerator="Ctrl+C", command=self.copy)
+        edit_menu.add_command(label="Paste", accelerator="Ctrl+V", command=self.paste)
+
+        self.root.bind('<Control-Z>', self.undo)
+        self.root.bind('<Shift-Control-Z>', self.redo)
+        self.root.bind('<Control-X>', self.cut)
+        self.root.bind('<Control-C>', self.copy)
+        self.root.bind('<Control-V>', self.paste)
+        # FIXME: These accelerators do not apply to Mac system
 
         # segment_menu
         segment_menu = Menu(main_menu)
@@ -76,7 +93,7 @@ class DemoView:
         rule_menu = self.load_rule_options(rule_menu)
         rule_menu.add_separator()
         rule_menu.add_command(label="Edit", command=self.show_rule_pane)
-        data_menu.add_cascade(label="Rules", menu=rule_menu)
+        data_menu.add_cascade(label="Rules", menu=rule_menu, command=self.show_rule_pane)
 
         # help_menu
         help_menu = Menu(main_menu)
@@ -140,17 +157,22 @@ class DemoView:
         self.term_pad.pack(side=LEFT, fill=Y)
         self.add_scrollbar(self.term_pad)
 
+        Label(term_tab, text="Here goes terminologies\nwith highest segmentation priority.").pack()
         Button(term_tab, text='Load', width=7, command=self.load_term).pack(expand=True)
         Button(term_tab, text='Add', width=7, command=lambda: self.listbox_add(self.term_pad)).pack(expand=True)
         Button(term_tab, text='Search', width=7, command=lambda: self.listbox_find(self.term_pad)).pack(expand=True)
         Button(term_tab, text='Delete', width=7, command=lambda: self.listbox_delete(self.term_pad)).pack(expand=True)
 
         # Make situ_tab
+
         situ_tab = Frame(self.setting_tabs)
         self.situ_pad = Listbox(situ_tab, selectmode=EXTENDED)
         self.situ_pad.pack(side=LEFT, fill=Y)
         self.add_scrollbar(self.situ_pad)
 
+        Label(situ_tab, text="Here goes special situations\n"
+                             "if the specific situation is encountered,\nit will be segmented as shown."
+              ).pack()
         Button(situ_tab, text='Load', width=7, command=self.load_situ).pack(expand=True)
         Button(situ_tab, text='Add', width=7, command=lambda: self.listbox_add(self.situ_pad)).pack(expand=True)
         Button(situ_tab, text='Delete', width=7, command=lambda: self.listbox_delete(self.situ_pad)).pack(expand=True)
@@ -162,42 +184,66 @@ class DemoView:
         self.setting_tabs.select(tab)
         self.setting_tabs.pack(expand=True, fill=BOTH)
 
-    @staticmethod
-    def add_scrollbar(obj):
-        scrollbar = Scrollbar(obj.master)
-        scrollbar.configure(command=obj.yview)
-        obj.configure(yscrollcommand=scrollbar.set)
-        scrollbar.pack(side=LEFT, fill=Y)
-
     # Menu functions
     # ----------------------------------------------------------
-    # File menu
+    # File menu functions
     def new(self):
-        pass
+        self.raw_text_pad.delete('1.0', END)
+
     def open(self):
-        pass
+        f_name = filedialog.askopenfilename()
+        if f_name:
+            f = open(f_name)
+            self.raw_text_pad.delete('1.0', END)
+            self.raw_text_pad.insert('1.0', f.read())
+            f.close()
+            self.file_name = f_name
+
     def save(self):
-        pass
+        try:
+            f = open(self.file_name, 'w')
+            f.write(self.raw_text_pad.get('1.0', END))
+            f.close()
+        except IOError:
+            # This means self.file_name is invalid
+            self.save_as()
+
     def save_as(self):
-        pass
+        f_name = filedialog.asksaveasfilename()
+        if f_name:
+            f = open(f_name, 'w')
+            f.write(self.raw_text_pad.get('1.0', END))
+            f.close()
+            self.file_name = f_name
+
+    def export(self):
+        if self.has_wrd:
+            f = filedialog.asksaveasfile()
+            if f:
+                f.write(self.wrd_text_pad.get('1.0', END))
+                f.close()
+
     def exit(self):
-        pass
+        if messagebox.askokcancel("Exit", "Do you want to exit?"):
+            self.root.destroy()
 
-    # Edit menu
+    # Edit menu functions
     def undo(self):
-        pass
-    def redo(self):
-        pass
-    def cut(self):
-        pass
-    def copy(self):
-        pass
-    def paste(self):
-        pass
-    def find_all(self):
-        pass
+        self.raw_text_pad.event_generate("<<Undo>>")
 
-    # Segment menu
+    def redo(self):
+        self.raw_text_pad.event_generate("<<Redo>>")
+
+    def cut(self):
+        self.raw_text_pad.event_generate("<<Cut>>")
+
+    def copy(self):
+        self.raw_text_pad.event_generate("<<Copy>>")
+
+    def paste(self):
+        self.raw_text_pad.event_generate("<<Paste>>")
+
+    # Segment menu functions
     def clear(self):
         self.sen_text_pad.delete(0, END)
         self.wrd_text_pad.delete('1.0', END)
@@ -290,6 +336,8 @@ class DemoView:
         else:
             self.setting_window_on = True
             self.make_setting_pad(0)
+            self.load_situ()
+            self.load_term()
 
     def show_rule_pane(self):
         if self.setting_window_on:
@@ -306,6 +354,77 @@ class DemoView:
         lex = self._get_lex()
         for l in lex:
             self.lexi_pad.insert(END, l)
+
+    def load_term(self):
+        """Load term and show in self.term_pad"""
+        lex = self._get_term()
+        for l in lex:
+            self.term_pad.insert(END, l)
+
+    def load_situ(self):
+        """Load term and show in self.situ_pad"""
+        # FIXME: There are three almost same function load_lex/term/situ,combine them!
+        lex = self._get_situ()
+        for l in lex:
+            self.situ_pad.insert(END, l)
+
+    # Help & About
+    def help(self):
+        hlp = """Some instruction:
+         1.Open a file into the first frame.
+         2.Type in the first frame or edit it as you like.
+
+         3.Click 'Sentence Segment' in the menu 'Segment' to segment the sentences.
+         4.Select some sentences.
+         5.Click 'Word Segment' in the menu 'Segment' to segment words.
+         or
+         3-5.Click 'Segment All' to segment everything.
+
+         6.Click 'Export' in menu 'File' to export word segmentation result.
+         7.See 'Data' menu to modify settings and data as you like.
+         8.Enjoy it! :)
+        """
+        t = Toplevel(self.root)
+        t.title("Help")
+        t.transient(self.root)
+        Label(t, text=hlp, justify=LEFT).pack(pady=5, padx=5)
+
+    def about(self):
+        abt = """This system is written as a assignment of SJTU IEEE."""
+
+        cpyright = """Copyright (c) 2016 SJTU
+    Permission to use, copy, modify, and distribute this software and its
+    documentation for any purpose."""
+
+        t = Toplevel(self.root)
+        t.title("About")
+        t.transient(self.root)
+        Label(t, text=abt).pack(pady=8, padx=5)
+        Label(t, text=cpyright, justify=LEFT).pack(pady=5, padx=5)
+
+    @property
+    def has_raw(self):
+        """Whether any file has been loaded into text_pad"""
+        return self.raw_text_pad.get('1.0', 'end').strip() != ""
+
+    @property
+    def has_sen(self):
+        """Whether sentence segmentation has been made"""
+        return self.sen_text_pad.get(0, 'end') != ()
+
+    @property
+    def has_wrd(self):
+        """Whether word segmentation has been made"""
+        return self.wrd_text_pad.get('1.0', 'end').strip() != ""
+
+    # Extensions of scrollbar and listbox functions
+    # ----------------------------------------------------------
+    @staticmethod
+    def add_scrollbar(obj):
+        scrollbar = Scrollbar(obj.master)
+        scrollbar.configure(command=obj.yview)
+        obj.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side=LEFT, fill=Y)
 
     def listbox_find(self, master: Listbox):
         """This function make a find window for a listbox"""
@@ -362,38 +481,9 @@ class DemoView:
         elif len(targets) >= 2:
             messagebox.showerror(message="Too much items selected!\nDelete one item at once!")
 
-    def load_term(self):
-        """Load term and show in self.term_pad"""
-        lex = self._get_term()
-        for l in lex:
-            self.term_pad.insert(END, l)
-
-    def load_situ(self):
-        """Load term and show in self.situ_pad"""
-        # FIXME: There are three almost same function load_lex/term/situ,combine them!
-        lex = self._get_situ()
-        for l in lex:
-            self.situ_pad.insert(END, l)
-
-
-    # Help & About
-    def help(self):
-        pass
-    def about(self):
-        pass
-
-    @property
-    def has_raw(self):
-        """Whether any file has been loaded into text_pad"""
-        return self.raw_text_pad.get('1.0', 'end').strip() != ""
-
-    @property
-    def has_sen(self):
-        """Whether sentence segmentation has been made"""
-        return self.sen_text_pad.get(0, 'end') != ()
-
     # Following functions involves conversation with controller
     # All interaction with controller are done below
+    # ----------------------------------------------------------
     # ----------------------------------------------------------
     def _sen_seg(self, raw: str) -> list:
         return self.controller.sentence_segment(raw)
