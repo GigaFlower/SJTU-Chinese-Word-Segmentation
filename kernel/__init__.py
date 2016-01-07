@@ -299,6 +299,13 @@ class Segmentation:
         self.rule_spec_mark = bools[1]  # Rule special mark segmentation
         self.rule_situation = bools[2]  # Rule particular situations
 
+    def lexicon_add_word(self, list_of_word):
+        """
+        Only called by controller.
+        The port of adding word into the lexicon.
+        """
+        self.rewr_lexicon.add_word(list_of_word)
+
 class Lexicon:
     def __init__(self):
         """
