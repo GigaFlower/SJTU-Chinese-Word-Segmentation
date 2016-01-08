@@ -258,9 +258,10 @@ class Segmentation:
 
     def get_word_lexicon(self):
         """
-        Only called by controller.
-        This function will get the original wordlist.
+        Only called by controller when initialzing.
+        This function will get the original wordlist (without terms).
         The wordlist is in the dictionary form.
+        CAUTION: When the lexicon is changed in the GUI, dic_orgwd doesn't change.
         """
         dic_orgwd = self.rewr_lexicon.dic_contro_wd
         return dic_orgwd
@@ -302,9 +303,145 @@ class Segmentation:
     def lexicon_add_word(self, list_of_word):
         """
         Only called by controller.
-        The port of adding word into the lexicon.
+
+        This function will add a new word into wordlist through the program.
+
+        The form of the parameter is [word name, probability level (range from 3
+        to 7, 3 is the highest level), properties of the word (two or more
+        properties are allowed)]:
+            For example:
+                list_of_word = ["我们", "3", "N"]
+                or,
+                list_of_word = ["因为", "3", "CONJ", "PREP"]
         """
-        self.rewr_lexicon.add_word(list_of_word)
+        file_wordlist = open(os.path.join(PATH, "wordlist.txt"), "a",
+                              encoding="utf-16")
+        try:
+            sentence = " ".join(list_of_word)
+        except:
+            sentence = ""
+        sentence = " " + sentence
+        file_wordlist.write(sentence)
+        file_wordlist.close()
+
+    def lexicon_particular_situation(self, list_of_situation):
+        """
+        Only called by controller.
+
+        This function will add a new particular situation into situation lexicon
+        through the program.
+
+        The form of the parameter is [string name, relationships (only contains
+        "bound" and "separated" and they are separated by "," (this comma is in
+        English form) )]:
+            For example:
+                list_of_situation = ["先后来到", "bound,separated,bound"]
+        """
+        file_situation = open(os.path.join(PATH, "particular_situation.txt"),
+                                "a", encoding="utf-16")
+        try:
+            sentence = " ".join(list_of_situation)
+        except:
+            sentence = ""
+        sentence = "\n" + sentence
+        file_situation.write(sentence)
+        file_situation.close()
+
+    def lexicon_delete_word(self, word):
+        """
+        Only called by controller.
+
+        This function will delete a word from wordlist through the program.
+        """
+        mark = False
+        word_list = self.rewr_lexicon.get_original_combined_list()
+
+        for num in range(len(word_list)):
+            if word_list[num][0] == word:
+                del word_list[num]
+                mark = True
+                break
+
+        if mark:
+            sentence_list = []
+            for element in word_list:
+                try:
+                    element[1] = str(element[1])
+                except:
+                    print(element)
+                sentence = " ".join(element)
+                sentence_list.append(sentence)
+
+            sentence = " ".join(sentence_list)
+
+            final_word_file = open(os.path.join(PATH, "wordlist.txt"), "w+",
+                                 encoding="utf-16")
+            final_word_file.write(sentence)
+            final_word_file.close()
+
+    def lexicon_delete_particular_situation(self, string):
+        """
+        Only called by controller.
+
+        This function will delete a string from particular situation lexicon
+        through the program.
+        """
+        mark = False
+        file = open(os.path.join(PATH, "particular_situation.txt"), "r",
+                                 encoding="utf-16")
+        string_in_file = file.read()
+        string_after_split = string_in_file.split()
+        parti_situ_list = []
+        for num in range(len(string_after_split)):
+            if num % 2 == 0:
+                sublist = []
+                sublist.append(string_after_split[num])
+            else:
+                sublist.append(string_after_split[num])
+                parti_situ_list.append(sublist)
+
+        for num in range(len(parti_situ_list)):
+            if parti_situ_list[num][0] == string:
+                del parti_situ_list[num]
+                mark = True
+                break
+
+        if mark:
+            sentence_list = []
+            for element in parti_situ_list:
+                sentence = " ".join(element)
+                sentence_list.append(sentence)
+
+            sentence = "\n".join(sentence_list)
+
+            final_word_file = open(os.path.join(PATH, "particular_situation.txt"), "w+",
+                                 encoding="utf-16")
+            final_word_file.write(sentence)
+            final_word_file.close()
+
+
+    def lexicon_reinitialization(self):
+        """
+        Only called by controller.
+
+        This function is operated after there have been some changes in the
+        lexicon txt and the lexicon needs to be reinitialized.
+        """
+        self.rewr_lexicon.rewrite_lexicon()
+        self.parti_situ.get_parti_situation()
+
+        # Initialize lexicon rewriting system.
+        self.rewr_lexicon = Rewrite_Lexicon()
+        self.rewr_lexicon.rewrite_lexicon()
+
+        # Initialize lexicon
+        self.lexicon = Lexicon()
+        self.lexicon.set_dictionary()
+
+        # Initialize particular situation rules
+        self.parti_situ = Parti_situ()
+        self.dic_situ = self.parti_situ.get_parti_situation()
+
 
 class Lexicon:
     def __init__(self):
@@ -521,6 +658,9 @@ class Rewrite_Lexicon:
                     # into the dictionary.
 
     def get_dic_contro_wd(self,dic):
+        """
+        This function will get the word dictionary for controller.
+        """
         for item in dic:
             if 3 <= dic[item] <= 7:
                 n = dic[item]
@@ -574,6 +714,27 @@ class Rewrite_Lexicon:
             sentence = " ".join(element)
             self.sentence_list.append(sentence)
 
+    def get_original_combined_list(self):
+        """
+        This function will get the lexicon in the list form.
+        """
+        file_word = open(os.path.join(PATH, "wordlist.txt"), "r", encoding="utf-16")
+        string = file_word.read()
+
+        list_split = string.split()
+
+        counter = -1
+        word_list = []
+        for element in list_split:
+            if ord(element[0]) >= 128:
+                # If a Chinese character is detected, it will be appended into a
+                # new element, followed by its probability and properties.
+                counter += 1
+                word_list += [[]]
+            word_list[counter].append(element)
+
+        return word_list
+
     def rewrite_lexicon(self):
         """
         This is the main structure of the lexicon rewrite part.
@@ -590,8 +751,12 @@ class Rewrite_Lexicon:
         Finally, combine the wordlist into a string and write into a file which
         is the word lexicon.
         """
+        self.word_list = []
+        self.word_list = []
+        self.term_list = []
+        self.sentence_list = []
+
         string = self.file_word.read()
-        self.file_word.close()
 
         list_split = self.split_into_list(string)
         self.combine(list_split)
@@ -625,52 +790,6 @@ class Rewrite_Lexicon:
         self.final_word_file.write(sentence)
         self.final_word_file.close()
 
-    def add_word(self, list_of_word):
-        """
-        Only called by controller.
-
-        This function will add a new word into wordlist through the program.
-
-        The form of the parameter is [word name, probability level (range from 3
-        to 7, 3 is the highest level), properties of the word (two or more
-        properties are allowed)]:
-            For example:
-                list_of_word = ["我们", "3", "N"]
-                or,
-                list_of_word = ["因为", "3", "CONJ", "PREP"]
-        """
-        file_wordlist = open(os.path.join(PATH, "wordlist.txt"), "a",
-                              encoding="utf-16")
-        try:
-            sentence = " ".join(list_of_word)
-        except:
-            sentence = ""
-        sentence = " " + sentence
-        file_wordlist.write(sentence)
-        file_wordlist.close()
-
-    def add_particular_situation(self, list_of_situation):
-        """
-        Only called by controller.
-
-        This function will add a new particular situation into situation lexicon
-        through the program.
-
-        The form of the parameter is [string name, relationships (only contains
-        "bound" and "separated" and they are separated by "," (this comma is in
-        English form) )]:
-            For example:
-                list_of_situation = ["先后来到", "bound,separated,bound"]
-        """
-        file_situation = open(os.path.join(PATH, "particular_situation.txt"),
-                                "a", encoding="utf-16")
-        try:
-            sentence = " ".join(list_of_situation)
-        except:
-            sentence = ""
-        sentence = "\n" + sentence
-        file_situation.write(sentence)
-        file_situation.close()
 
 class Parti_situ:
     """Particular situation"""
@@ -737,6 +856,8 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("要在中国开连锁店老瓦告诉记者，他退役后并没有在瑞典国内任职，而是在德国一家俱乐部教球，同时在北京开了一家叫“维京锐点”的餐厅兼酒吧，北京奥运会结束后，我还会在中国接着开些连锁店呢。"))
+    s.lexicon_delete_word("胡国盛")
+    s.lexicon_reinitialization()
+    print(s.word_segment("胡国盛是好人。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
