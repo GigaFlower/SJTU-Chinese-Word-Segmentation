@@ -7,9 +7,14 @@ import time
 import os
 from kernel import dts_calculate, mi, judge, segmentation_by_retrieve
 
-SPLIT = '|'
 PATH = os.path.split(os.path.realpath(__file__))[0]
 # The path of this file regardless of operating system.
+
+
+SPLIT = '|'
+PUNCTUATION_STANDARD = "，：。——…… ！？；/"
+PUNCTUATION_IN_SENTENCE = "~！@#￥%……&*（）—— {}|【】、；：，。、？*/\“”《》"
+# the sentence segmentation punctuations and the punctuations in the sentence
 
 
 class Segmentation:
@@ -60,8 +65,6 @@ class Segmentation:
         """
         substring = ""
         string_complete = []
-        punc_stan = open(os.path.join(PATH, "punctuation_standard_file.txt"), "r",
-                             encoding="utf-16").read()
         for cha in raw:
             if cha == "\n":
                 string_complete.append(substring)
@@ -69,7 +72,7 @@ class Segmentation:
                 substring = ""
             else:
                 substring += cha
-                if cha in punc_stan:
+                if cha in PUNCTUATION_STANDARD:
                     string_complete.append(substring)
                     # If the sentence segment punctuations("\n" is excluded) are
                     # detected, the sentence should be cut here.
@@ -195,16 +198,13 @@ class Segmentation:
         their relationships with their neighbors in mark_list as "separated".
         Then they are replaced by blanks.
         """
-        punc_file = open(os.path.join(PATH, "punctuation_file_in_prob.txt"), "r", encoding="utf-16")
-        # "punc_file" contains punctuations.
-        punc = punc_file.read()
         subs = ""
         length = len(string)
         if length == 1:
             pass
         else:
             for num in range(length):
-                if string[num] not in punc:
+                if string[num] not in PUNCTUATION_IN_SENTENCE:
                     subs += string[num]
                 else:
                     subs += " "
@@ -232,7 +232,6 @@ class Segmentation:
                             pass
                     else:
                         pass
-        punc_file.close()
         return subs, mark_list
 
     def set_judge_property(self, dts_mean, dts_st_der, string_dts_list, mi_mean,
@@ -856,8 +855,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    s.lexicon_delete_word("胡国盛")
-    s.lexicon_reinitialization()
     print(s.word_segment("胡国盛是好人。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))

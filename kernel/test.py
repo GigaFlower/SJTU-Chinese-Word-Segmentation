@@ -59,7 +59,7 @@ def test(start=0, amount=20):
 
     seg = kernel.Segmentation()
 
-    output = open("final_test_result.txt", 'w')
+    output = open("test_result601-700.txt", 'w')
     src_file = open('test.txt', 'r', encoding='utf-16')
     ans_file = open('answer.txt', 'r', encoding='utf-16')
 
@@ -131,4 +131,4 @@ def test(start=0, amount=20):
 
 if __name__ == '__main__':
 
-    test(1000, 1000)
+    test(600, 100)
