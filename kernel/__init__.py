@@ -853,6 +853,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("高祀仁表示，目前香港经济处于二十年来的最好水平，连续三年保持“高增长、低通胀”，预计今年的本地产生总值将保持千分之五点三的较高增长速度"))
+    print(s.word_segment("是否侵权，北京有关部门将作进一步调查"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
