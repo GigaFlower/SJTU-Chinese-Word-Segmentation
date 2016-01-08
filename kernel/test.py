@@ -58,6 +58,7 @@ def test(start=0, amount=20):
     t0 = time.time()
 
     seg = kernel.Segmentation()
+    seg.set_rule_boolean([True, False, True])
 
     output = open("test_result601-700.txt", 'w')
     src_file = open('test.txt', 'r', encoding='utf-16')
