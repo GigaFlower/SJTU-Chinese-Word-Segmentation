@@ -117,13 +117,19 @@ class View:
         self.raw_text_pad = Text(self.root, width=20, height=20, font=my_font)
         self.raw_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
 
-        # setting sen_text_pad
-        self.sen_text_pad = Listbox(self.root, width=20, height=20, selectmode=EXTENDED, font=my_font)
-        self.sen_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
-
         # setting wrd_text_pad
         self.wrd_text_pad = Text(self.root, width=20, height=20, font=my_font)
-        self.wrd_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
+        self.wrd_text_pad.pack(side=RIGHT, fill=BOTH, expand=TRUE)
+
+        # setting sen_text_pad
+        self.sen_text_pad = Listbox(self.root, width=20, height=20, selectmode=EXTENDED, font=my_font)
+
+        scrollbar = Scrollbar(self.sen_text_pad.master, orient=HORIZONTAL)
+        scrollbar.configure(command=self.sen_text_pad.xview)
+        self.sen_text_pad.configure(xscrollcommand=scrollbar.set)
+        scrollbar.pack(side=TOP, fill=X)
+
+        self.sen_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
 
         Button(self.root, text="Sentence Segment", command=self.sentence_segment)\
             .place(relx=0.4, rely=0.85, relwidth=0.2)
