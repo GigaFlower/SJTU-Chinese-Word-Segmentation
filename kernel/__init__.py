@@ -686,9 +686,12 @@ class Rewrite_Lexicon:
         term lexicon.
         """
         for element in self.word_list:
-            if element[2] == "TERM":
-                sentence = " ".join(element)
-                self.term_list.append(sentence)
+            try:
+                if element[2] == "TERM":
+                    sentence = " ".join(element)
+                    self.term_list.append(sentence)
+            except:
+                print(element)
             else:
                 pass
 
