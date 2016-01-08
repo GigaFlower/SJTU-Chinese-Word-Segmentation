@@ -81,13 +81,13 @@ class Mi:
                 if x[0] in NUMBER_STRING and x[1] in NUMBER_STRING:
                     # if the word's two characters are both number characters,
                     # they tend to be bound.
-                    p = max( p + 3000000 , 2 * p )
+                    p = max( p + 10000000 , 2 * p )
                 else:
                     pass
             else:
                 p = 5
                 if x[0] in NUMBER_STRING and x[1] in NUMBER_STRING:
-                    p = 3000000
+                    p = 10000000
                 else:
                     pass
             return int(p)

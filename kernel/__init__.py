@@ -37,10 +37,6 @@ class Segmentation:
         self.rule_spec_mark = True  # Rule special mark segmentation
         self.rule_situation = True  # Rule particular situation
 
-        self.sen_punc_stan = open(os.path.join(PATH, "punctuation_standard_file.txt"), "r",
-                             encoding="utf-16")
-        # "sen_punc_stan" contains sentence segment punctuations.
-
         self.r = segmentation_by_retrieve.RetrieveSeg()
         self.dts = dts_calculate.Dts()
         self.m = mi.Mi()
@@ -85,7 +81,6 @@ class Segmentation:
             # punctuation, append the last string.
         else:
             pass
-        self.sen_punc_stan.close()
         return string_complete
 
     def word_segment(self, raw: str) -> str:
@@ -858,6 +853,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("胡国盛是好人。"))
+    print(s.word_segment("高祀仁表示，目前香港经济处于二十年来的最好水平，连续三年保持“高增长、低通胀”，预计今年的本地产生总值将保持千分之五点三的较高增长速度"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
