@@ -39,7 +39,13 @@ class View:
     def run(self):
         self.make_text_pad()
         self.make_menu()
+        self.make_button()
+        self.root.minsize(width="700", height="450")
         self.root.mainloop()
+
+    def make_button(self):
+        b1=Button(text="Sentence",bg="lightgreen",command=self.sentence_segment)
+        b1.pack()
 
     def make_menu(self):
         main_menu = Menu(self.root)
@@ -112,16 +118,16 @@ class View:
     def make_text_pad(self):
         """This function setting the properties of raw_text_pad,sen_text_pad and wrd_text_pad"""
         # setting raw_text_pad
-        self.raw_text_pad = Text(self.root, width="40", height="40")
-        self.raw_text_pad.pack(side=LEFT, fill=Y)
+        self.raw_text_pad = Text(self.root, width="30", height="20")
+        self.raw_text_pad.pack(side=LEFT, fill=BOTH,expand=TRUE)
 
         # setting sen_text_pad
-        self.sen_text_pad = Listbox(self.root, width="40", height="40", selectmode=EXTENDED)
-        self.sen_text_pad.pack(side=LEFT, fill=Y)
+        self.sen_text_pad = Listbox(self.root, width="30", height="20", selectmode=EXTENDED)
+        self.sen_text_pad.pack(side=LEFT, fill=BOTH,expand=TRUE)
 
         # setting wrd_text_pad
-        self.wrd_text_pad = Text(self.root, width="40", height="40")
-        self.wrd_text_pad.pack(side=LEFT, fill=Y)
+        self.wrd_text_pad = Text(self.root, width="30", height="20")
+        self.wrd_text_pad.pack(side=LEFT, fill=BOTH,expand=TRUE)
 
     def make_setting_pad(self, tab=0):
         """Make setting_pad which is to be triggered from clicking at 'Lexicon' or 'Rule' in menu"""
