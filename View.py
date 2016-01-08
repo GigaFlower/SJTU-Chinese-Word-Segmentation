@@ -2,6 +2,7 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
+from tkinter import font
 import tkinter.ttk as ttk
 
 
@@ -39,6 +40,7 @@ class View:
     def run(self):
         self.make_text_pad()
         self.make_menu()
+        self.root.minsize(width="700", height="450")
         self.root.mainloop()
 
     def make_menu(self):
@@ -111,17 +113,27 @@ class View:
 
     def make_text_pad(self):
         """This function setting the properties of raw_text_pad,sen_text_pad and wrd_text_pad"""
+        my_font = ('', '24')
         # setting raw_text_pad
-        self.raw_text_pad = Text(self.root, width="40", height="40")
-        self.raw_text_pad.pack(side=LEFT, fill=Y)
+        self.raw_text_pad = Text(self.root, width=20, height=20, font=my_font)
+        self.raw_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
+
+        b = Button(self.raw_text_pad, text="Segment", command=self.sentence_segment)
+        b.place(relx=0.2, rely=0.9, relwidth=0.6)
 
         # setting sen_text_pad
-        self.sen_text_pad = Listbox(self.root, width="40", height="40", selectmode=EXTENDED)
-        self.sen_text_pad.pack(side=LEFT, fill=Y)
+        self.sen_text_pad = Listbox(self.root, width=20, height=20, selectmode=EXTENDED, font=my_font)
+        self.sen_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
+
+        b = Button(self.sen_text_pad, text="Segment All", command=self.word_segment)
+        b.place(relx=0.2, rely=0.9, relwidth=0.6)
 
         # setting wrd_text_pad
-        self.wrd_text_pad = Text(self.root, width="40", height="40")
-        self.wrd_text_pad.pack(side=LEFT, fill=Y)
+        self.wrd_text_pad = Text(self.root, width=20, height=20, font=my_font)
+        self.wrd_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
+
+        b = Button(self.wrd_text_pad, text="Clear", command=self.clear)
+        b.place(relx=0.2, rely=0.9, relwidth=0.6)
 
     def make_setting_pad(self, tab=0):
         """Make setting_pad which is to be triggered from clicking at 'Lexicon' or 'Rule' in menu"""
@@ -133,6 +145,7 @@ class View:
         def delete_setting_window():
             self.setting_window_on = False
             self._set_rules()
+            self._save()
             self.setting_window.destroy()
         self.setting_window.protocol('WM_DELETE_WINDOW', delete_setting_window)
 
@@ -349,6 +362,7 @@ class View:
             self.load_situ()
             self.load_term()
 
+    # FIXME: There are horrible redundancy in following functions!
     def load_lexicon(self):
         """Load lexicon and show in self.lex_pad"""
         lex = self._get_lex()
@@ -363,7 +377,6 @@ class View:
 
     def load_situ(self):
         """Load term and show in self.situ_pad"""
-        # FIXME: There are three almost same function load_lex/term/situ,combine them!
         lex = self._get_situ()
         for l in lex:
             self.situ_pad.insert(END, l)
@@ -467,16 +480,19 @@ class View:
                 messagebox.showerror(message="This word already exists!")
             elif item.strip():
                 master.insert(END, item)
+                self._modify(item, 'add', master)
                 master.select_clear(0, END)
                 master.select_set(END)
                 master.see(END)
+                add_window.destroy()
 
         Button(add_window, text="Add!", command=add).pack(padx=4, pady=4)
 
     def listbox_delete(self, master: Listbox):
-        """This function delete a item for a listbox"""
+        """This function returns the to-be-deleted item for a listbox"""
         targets = master.curselection()
         if len(targets) == 1:
+            self._modify(master.get(targets[0]), 'delete', master)
             master.delete(targets[0])
         elif len(targets) >= 2:
             messagebox.showerror(message="Too much items selected!\nDelete one item at once!")
@@ -505,3 +521,20 @@ class View:
 
     def _get_situ(self) -> list:
         return self.controller.get_particular_situation()
+
+    def _modify(self, data: str, operation: str, master: Listbox):
+        assert(operation in ("add", "delete"))
+
+        if master is self.lexi_pad:
+            data_type = 'lexi'
+        elif master is self.term_pad:
+            data_type = 'term'
+        elif master is self.situ_pad:
+            data_type = 'situ'
+        else:
+            raise ValueError
+
+        self.controller.modify(data, operation, data_type)
+
+    def _save(self):
+        self.controller.rebuild()

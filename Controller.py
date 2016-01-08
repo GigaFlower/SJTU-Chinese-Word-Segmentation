@@ -89,6 +89,48 @@ class MainController:
         """Tell self.kernel which rule need to be obeyed"""
         self.kernel.set_rule_boolean(bools)
 
+    def modify(self, data: str, operation: str, data_type: str):
+        assert(data_type in ("lexi", "term", "situ"))
+        assert(operation in ("add", "delete"))
+
+        if data_type == "lexi":
+            if operation == 'add':
+                self.kernel.lexicon_add_word([data, "5", "N"])  # Here "5" and "N" are arbitrary
+            elif operation == 'delete':
+                self.kernel.lexicon_delete_word(data)
+
+        elif data_type == "term":
+            if operation == 'add':
+                self.kernel.lexicon_add_word([data, "5", "TERM"])
+            elif operation == 'delete':
+                self.kernel.lexicon_delete_word(data)
+
+        elif data_type == "situ":
+            # data should be like "ABCDE -> A|BC|DE"
+            # We need decompose it first
+            tmp = data.split("->")
+            data = tmp[0].strip()
+            tmp[1] = tmp[1].strip()
+
+            ind = [tmp[1].index(ch) for ch in data]  # [0,2,3,5,6]
+            d_ind = [ind[i]-i for i in range(len(ind))]  # [0,1,1,2,2]
+
+            string = ""
+            for i in range(len(d_ind)-1):
+                if d_ind[i+1] != d_ind[i]:
+                    string += 'separated,'
+                else:
+                    string += 'bound,'
+            string = string[:-1]
+
+            if operation == 'add':
+                self.kernel.lexicon_particular_situation([data, string])
+            elif operation == 'delete':
+                self.kernel.lexicon_delete_particular_situation(data)
+
+    def rebuild(self):
+        self.kernel.lexicon_reinitialization()
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
