@@ -2,7 +2,6 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
-from tkinter import font
 import tkinter.ttk as ttk
 
 
@@ -40,7 +39,7 @@ class View:
     def run(self):
         self.make_text_pad()
         self.make_menu()
-        self.root.minsize(width="700", height="450")
+        self.root.minsize(width="1000", height="450")
         self.root.mainloop()
 
     def make_menu(self):
@@ -118,26 +117,27 @@ class View:
         self.raw_text_pad = Text(self.root, width=20, height=20, font=my_font)
         self.raw_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
 
-        b = Button(self.raw_text_pad, text="Segment", command=self.sentence_segment)
-        b.place(relx=0.2, rely=0.9, relwidth=0.6)
-
         # setting sen_text_pad
         self.sen_text_pad = Listbox(self.root, width=20, height=20, selectmode=EXTENDED, font=my_font)
         self.sen_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
-
-        b = Button(self.sen_text_pad, text="Segment All", command=self.word_segment)
-        b.place(relx=0.2, rely=0.9, relwidth=0.6)
 
         # setting wrd_text_pad
         self.wrd_text_pad = Text(self.root, width=20, height=20, font=my_font)
         self.wrd_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
 
-        b = Button(self.wrd_text_pad, text="Clear", command=self.clear)
-        b.place(relx=0.2, rely=0.9, relwidth=0.6)
+        Button(self.root, text="Sentence Segment", command=self.sentence_segment)\
+            .place(relx=0.4, rely=0.85, relwidth=0.2)
+
+        Button(self.root, text="Word Segment", command=self.word_segment)\
+            .place(relx=0.4, rely=0.9, relwidth=0.2)
+
+        Button(self.root, text="Clear", command=self.clear)\
+            .place(relx=0.4, rely=0.95, relwidth=0.2)
 
     def make_setting_pad(self, tab=0):
         """Make setting_pad which is to be triggered from clicking at 'Lexicon' or 'Rule' in menu"""
         self.setting_window = Toplevel()
+        self.setting_window.title("Settings")
         self.setting_window.minsize(400, 200)
         self.setting_window.resizable(False, False)
 

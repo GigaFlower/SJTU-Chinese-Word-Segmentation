@@ -8,6 +8,7 @@ class MainController:
     """The main controller of app activity"""
     def __init__(self):
         self.kernel = kernel.Segmentation()
+        self.kernel.set_rule_boolean([True] * 3)
         self.view = view.View(self)
 
     def run(self):
