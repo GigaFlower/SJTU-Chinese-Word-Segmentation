@@ -2,6 +2,7 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
+from tkinter import font
 import tkinter.ttk as ttk
 
 
@@ -117,17 +118,27 @@ class View:
 
     def make_text_pad(self):
         """This function setting the properties of raw_text_pad,sen_text_pad and wrd_text_pad"""
+        my_font = ('Times', '24')
         # setting raw_text_pad
-        self.raw_text_pad = Text(self.root, width="30", height="20")
-        self.raw_text_pad.pack(side=LEFT, fill=BOTH,expand=TRUE)
+        self.raw_text_pad = Text(self.root, width=30, height=20, font=my_font)
+        self.raw_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
+
+        b = Button(self.raw_text_pad, text="Segment", command=self.sentence_segment)
+        b.place(relx=0.2, rely=0.9, relwidth=0.6)
 
         # setting sen_text_pad
-        self.sen_text_pad = Listbox(self.root, width="30", height="20", selectmode=EXTENDED)
-        self.sen_text_pad.pack(side=LEFT, fill=BOTH,expand=TRUE)
+        self.sen_text_pad = Listbox(self.root, width=30, height=20, selectmode=EXTENDED)
+        self.sen_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
+
+        b = Button(self.sen_text_pad, text="Segment All", command=self.word_segment)
+        b.place(relx=0.2, rely=0.9, relwidth=0.6)
 
         # setting wrd_text_pad
-        self.wrd_text_pad = Text(self.root, width="30", height="20")
-        self.wrd_text_pad.pack(side=LEFT, fill=BOTH,expand=TRUE)
+        self.wrd_text_pad = Text(self.root, width=30, height=20, font=my_font)
+        self.wrd_text_pad.pack(side=LEFT, fill=BOTH, expand=TRUE)
+
+        b = Button(self.wrd_text_pad, text="Clear", command=self.clear)
+        b.place(relx=0.2, rely=0.9, relwidth=0.6)
 
     def make_setting_pad(self, tab=0):
         """Make setting_pad which is to be triggered from clicking at 'Lexicon' or 'Rule' in menu"""
