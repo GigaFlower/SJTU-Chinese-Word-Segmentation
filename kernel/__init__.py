@@ -34,7 +34,7 @@ class Segmentation:
 
         # Particular rule buttons
         self.rule_term = True  # Rule term segmentation
-        self.rule_spec_mark = True  # Rule special mark segmentation
+        self.rule_spec_mark = False  # Rule special mark segmentation
         self.rule_situation = True  # Rule particular situation
 
         self.r = segmentation_by_retrieve.RetrieveSeg()
@@ -853,6 +853,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("是否侵权，北京有关部门将作进一步调查"))
+    print(s.word_segment("而当一个券商对所有人都许诺保底条款时，也肯定无法完成承诺。"))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
