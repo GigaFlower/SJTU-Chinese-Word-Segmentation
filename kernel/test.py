@@ -4,6 +4,7 @@ Test corpus comes from ShanXi University
 """
 import kernel
 import re, time
+import matplotlib.pyplot as plt
 
 
 def convert_to_index_list(string: str) -> list:
@@ -130,6 +131,24 @@ def test(start=0, amount=20):
     output.write(tmp)
     output.close()
 
+
+def complexity(maxlen):
+    string = "而当一个券商对所有人都许诺保底条款时，也肯定无法完成承诺。"*4
+    s = kernel.Segmentation()
+    x, y = [], []
+    for i in range(1, maxlen):
+        t = string[:i+1]
+        a = time.time()
+        s.word_segment(t)
+        b = time.time()
+        x.append(i)
+        y.append(b-a)
+        print("Len: %d" % i)
+        print("Time consumed: %.2fs" % (b-a))
+    plt.plot(x, y)
+    plt.show()
+
 if __name__ == '__main__':
 
     test(600, 1000)
+    complexity(100)
