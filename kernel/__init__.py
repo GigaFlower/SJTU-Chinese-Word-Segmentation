@@ -853,6 +853,6 @@ if __name__ == '__main__':
 
     a = time.time()
     s = Segmentation()
-    print(s.word_segment("而当一个券商对所有人都许诺保底条款时，也肯定无法完成承诺。"))
+    print(s.word_segment(""))
     b = time.time()
     print("Time consumed: %.2fs" % (b-a))
